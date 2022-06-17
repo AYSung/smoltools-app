@@ -5,7 +5,8 @@ import pandas as pd
 from smoltools import fret0
 
 from utils import colors, config
-from widgets import r0_finder, distance, e_fret, pdb_loader
+from widgets import pdb_loader
+from widgets.fret0 import r0_finder, distance, e_fret
 
 
 class Dashboard(pn.template.BootstrapTemplate):

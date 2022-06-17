@@ -5,7 +5,8 @@ import pandas as pd
 from smoltools import albatrosy
 
 from utils import colors, config
-from widgets import distance, pdb_loader
+from widgets import pdb_loader
+from widgets.albatrosy import distance, noe_map, scatter
 
 
 class Dashboard(pn.template.BootstrapTemplate):
@@ -30,45 +31,11 @@ class Dashboard(pn.template.BootstrapTemplate):
         return self
 
     def load_analyses(self) -> None:
-        # TODO: make separate widgets
+        # TODO: make widgets rearrange in grid
         self.analyses = pn.Column(
-            distance.make_distance_widget(self.data['delta'], cutoff=1),
-            pn.Card(
-                pn.Tabs(
-                    ('Conformation A', albatrosy.plots.noe_map(self.data['a'])),
-                    ('Conformation B', albatrosy.plots.noe_map(self.data['b'])),
-                    (
-                        'Combined',
-                        albatrosy.plots.noe_map(
-                            albatrosy.splice_conformation_tables(
-                                self.data['a'], self.data['b']
-                            )
-                        ),
-                    ),
-                ),
-                title='NOE Maps',
-                collapsible=False,
-                sizing_mode='stretch_width',
-            ),
-            pn.Card(
-                pn.Tabs(
-                    ('Conformation A', albatrosy.plots.distance_map(self.data['a'])),
-                    ('Conformation B', albatrosy.plots.distance_map(self.data['b'])),
-                    (
-                        '\u0394Distance',
-                        albatrosy.plots.delta_distance_map(self.data['delta']),
-                    ),
-                ),
-                title='Distance Maps',
-                collapsible=False,
-                sizing_mode='stretch_width',
-            ),
-            pn.Card(
-                pn.pane.Vega(albatrosy.plots.distance_scatter(self.data['delta'], 15)),
-                title='Distance Scatter',
-                collapsible=False,
-                sizing_mode='stretch_width',
-            ),
+            distance.make_distance_widget(self.data),
+            noe_map.make_noe_widget(self.data),
+            scatter.make_distance_scatter_widget(self.data),
             width_policy='max',
         )
         self.main[0][0] = self.analyses

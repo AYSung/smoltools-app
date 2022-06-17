@@ -58,7 +58,7 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
 
             upload_button.button_type = 'success'
             widget[-1] = ''
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
             upload_button.button_type = 'primary'
 
         except AttributeError:

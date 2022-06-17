@@ -1,3 +1,4 @@
+import asyncio
 from typing import Protocol
 import pandas as pd
 import panel as pn
@@ -39,7 +40,7 @@ def load_pdb_files(structure_a, chain_id_a, structure_b, chain_id_b) -> pd.DataF
 
 
 def make_widget(dashboard: Dashboard) -> pn.Column:
-    def upload_files(event=None):
+    async def upload_files(event=None):
         # TODO: better error messages (more specific to conformation)
         try:
             structure_a = pdb_uploader_a.value_as_pdb
@@ -54,9 +55,10 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
             dashboard.load_pdb_files(chain_a, chain_b)
             dashboard.load_analyses()
 
-            # TODO: revert to default color (async sleep?)
             upload_button.button_type = 'success'
             widget[-1] = ''
+            await asyncio.sleep(1)
+            upload_button.button_type = 'primary'
 
         except AttributeError:
             upload_button.button_type = 'warning'

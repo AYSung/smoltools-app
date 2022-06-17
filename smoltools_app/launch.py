@@ -1,6 +1,7 @@
 import panel as pn
 
 import fret0
+import albatrosy
 from utils import config
 
 
@@ -10,6 +11,7 @@ def main() -> None:
 
     APPS = {
         'fret0': fret0.app,
+        'albaTROSY': albatrosy.app,
     }
 
     PORT = 5006

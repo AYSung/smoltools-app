@@ -26,6 +26,15 @@ def r0_pair_table() -> pnw.DataFrame:
     return fret_pair_table
 
 
+def make_chart(distance_a, distance_b) -> pn.pane.Vega:
+    chart = fret0.plots.r0_curves(distance_a, distance_b)
+
+    return pn.pane.Vega(
+        chart,
+        # show_actions=True,
+    )
+
+
 def make_widget() -> pn.Card:
     distance_a_input = pnw.FloatInput(
         name='Distance in A', start=10, end=100, value=51.1, width=120
@@ -35,7 +44,7 @@ def make_widget() -> pn.Card:
     )
 
     chart = pn.bind(
-        fret0.plots.r0_curves,
+        make_chart,
         distance_a=distance_a_input,
         distance_b=distance_b_input,
     )
@@ -47,4 +56,5 @@ def make_widget() -> pn.Card:
         pn.Row(chart, align='center'),
         pn.Row(table, align='center'),
         title='R0 finder',
+        collapsible=False,
     )

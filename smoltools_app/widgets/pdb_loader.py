@@ -1,9 +1,12 @@
 from typing import Protocol
+import pandas as pd
 import panel as pn
 import panel.widgets as pnw
 
 from utils import colors
-import fret0
+from smoltools.pdbtools import load, select
+from smoltools import fret0
+
 from Bio.PDB.Structure import Structure
 
 
@@ -19,7 +22,18 @@ class PDBFileInput(pnw.FileInput):
 
     @property
     def value_as_pdb(self) -> Structure:
-        return fret0.read_pdb_from_bytes(self.structure_id, self.value)
+        return load.read_pdb_from_bytes(self.structure_id, self.value)
+
+
+def load_pdb_files(structure_a, chain_id_a, structure_b, chain_id_b) -> pd.DataFrame:
+    # TODO: allow choosing model number
+    chain_a = select.get_chain(structure_a, model=0, chain=chain_id_a)
+    chain_b = select.get_chain(structure_b, model=0, chain=chain_id_b)
+
+    distances_a = fret0.chain_to_distances(chain_a)
+    distances_b = fret0.chain_to_distances(chain_b)
+
+    return fret0.pairwise_distance_between_conformations(distances_a, distances_b)
 
 
 def make_widget(dashboard: Dashboard) -> pn.Column:
@@ -28,12 +42,15 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
             upload_button.button_type = 'warning'
             return
 
-        dashboard.load_pdb_files(
-            pdb_uploader_a.value_as_pdb,
-            chain_input_a.value,
-            pdb_uploader_b.value_as_pdb,
-            chain_input_b.value,
+        # TODO: allow choosing model number
+        chain_a = select.get_chain(
+            pdb_uploader_a.value_as_pdb, model=0, chain=chain_input_a.value
         )
+        chain_b = select.get_chain(
+            pdb_uploader_b.value_as_pdb, model=0, chain=chain_input_b.value
+        )
+
+        dashboard.load_pdb_files(chain_a, chain_b)
 
         upload_button.button_type = 'success'
         widget.collapsed = True

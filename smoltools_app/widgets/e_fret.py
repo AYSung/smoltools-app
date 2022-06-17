@@ -3,7 +3,7 @@ import pandas as pd
 import panel as pn
 import panel.widgets as pnw
 
-import fret0
+from smoltools import fret0
 
 
 def make_e_fret_widget(df: pd.DataFrame) -> pn.Card:

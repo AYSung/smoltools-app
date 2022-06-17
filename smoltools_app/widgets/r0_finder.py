@@ -2,7 +2,7 @@ import pandas as pd
 import panel as pn
 import panel.widgets as pnw
 
-import smoltools.fret0 as fret0
+from smoltools import fret0
 
 
 def r0_pair_table() -> pnw.DataFrame:

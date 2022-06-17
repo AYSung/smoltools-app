@@ -5,7 +5,7 @@ import pandas as pd
 # from templates import template
 from utils import colors, config
 from widgets import r0_finder, distance, e_fret, pdb_loader
-import fret0
+from smoltools import fret0
 
 
 class Dashboard(pn.template.BootstrapTemplate):
@@ -38,8 +38,13 @@ class Dashboard(pn.template.BootstrapTemplate):
             ]
         )
 
-    def load_pdb_files(self, structure_a, chain_a, structure_b, chain_b) -> None:
-        self.data = fret0.pairwise_distances(structure_a, chain_a, structure_b, chain_b)
+    def load_pdb_files(self, chain_a, chain_b) -> None:
+        distances_a = fret0.chain_to_distances(chain_a)
+        distances_b = fret0.chain_to_distances(chain_b)
+
+        self.data = fret0.pairwise_distance_between_conformations(
+            distances_a, distances_b
+        )
 
         self.load_analyses()
 

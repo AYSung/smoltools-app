@@ -31,12 +31,11 @@ class Dashboard(pn.template.BootstrapTemplate):
         return self
 
     def load_analyses(self) -> None:
-        self.analyses.extend(
-            [
-                distance.make_distance_widget(self.data),
-                e_fret.make_e_fret_widget(self.data),
-            ]
+        self.analyses = pn.Column(
+            distance.make_distance_widget(self.data),
+            e_fret.make_e_fret_widget(self.data),
         )
+        self.main[0][0] = self.analyses
 
     def load_pdb_files(self, chain_a, chain_b) -> None:
         distances_a = fret0.chain_to_distances(chain_a)

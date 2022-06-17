@@ -25,6 +25,7 @@ def make_e_fret_widget(df: pd.DataFrame) -> pn.Card:
         pn.Tabs(('Table', e_fret_table)),
         sizing_mode='stretch_both',
         title='Pairwise E_fret',
+        collapsible=False,
     )
 
 

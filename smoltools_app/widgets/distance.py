@@ -38,4 +38,5 @@ def make_distance_widget(df: pd.DataFrame):
         pn.Tabs(('Table', distance_table)),
         sizing_mode='stretch_both',
         title='Pairwise Distances',
+        collapsible=False,
     )

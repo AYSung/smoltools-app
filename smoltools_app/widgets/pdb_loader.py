@@ -42,16 +42,18 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
             upload_button.button_type = 'warning'
             return
 
+        structure_a = pdb_uploader_a.value_as_pdb
+        chain_id_a = chain_input_a.value
+        structure_b = pdb_uploader_b.value_as_pdb
+        chain_id_b = chain_input_b.value
+
         # TODO: allow choosing model number
-        chain_a = select.get_chain(
-            pdb_uploader_a.value_as_pdb, model=0, chain=chain_input_a.value
-        )
-        chain_b = select.get_chain(
-            pdb_uploader_b.value_as_pdb, model=0, chain=chain_input_b.value
-        )
+        chain_a = select.get_chain(structure_a, model=0, chain=chain_id_a)
+        chain_b = select.get_chain(structure_b, model=0, chain=chain_id_b)
 
         dashboard.load_pdb_files(chain_a, chain_b)
 
+        # TODO: revert to default color (async sleep?)
         upload_button.button_type = 'success'
         widget.collapsed = True
         widget.header_background = colors.GREEN

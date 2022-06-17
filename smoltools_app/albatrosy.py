@@ -16,7 +16,9 @@ class Dashboard(pn.template.BootstrapTemplate):
             header_background=colors.LIGHT_BLUE,
         )
         self.data = pd.DataFrame()
-        self.analyses = pn.Column('<<< Upload files to analyze')
+        self.analyses = pn.Column(
+            '#### <<< Upload files to analyze', width_policy='max'
+        )
 
     def initialize(self) -> Self:
         self.main.append(
@@ -28,16 +30,61 @@ class Dashboard(pn.template.BootstrapTemplate):
         return self
 
     def load_analyses(self) -> None:
-        self.analyses = pn.Column(distance.make_distance_widget(self.data, cutoff=0))
+        # TODO: make separate widgets
+        self.analyses = pn.Column(
+            distance.make_distance_widget(self.data['delta'], cutoff=1),
+            pn.Card(
+                pn.Tabs(
+                    ('Conformation A', albatrosy.plots.noe_map(self.data['a'])),
+                    ('Conformation B', albatrosy.plots.noe_map(self.data['b'])),
+                    (
+                        'Combined',
+                        albatrosy.plots.noe_map(
+                            albatrosy.splice_conformation_tables(
+                                self.data['a'], self.data['b']
+                            )
+                        ),
+                    ),
+                ),
+                title='NOE Maps',
+                collapsible=False,
+                sizing_mode='stretch_width',
+            ),
+            pn.Card(
+                pn.Tabs(
+                    ('Conformation A', albatrosy.plots.distance_map(self.data['a'])),
+                    ('Conformation B', albatrosy.plots.distance_map(self.data['b'])),
+                    (
+                        '\u0394Distance',
+                        albatrosy.plots.delta_distance_map(self.data['delta']),
+                    ),
+                ),
+                title='Distance Maps',
+                collapsible=False,
+                sizing_mode='stretch_width',
+            ),
+            pn.Card(
+                pn.pane.Vega(albatrosy.plots.distance_scatter(self.data['delta'], 15)),
+                title='Distance Scatter',
+                collapsible=False,
+                sizing_mode='stretch_width',
+            ),
+            width_policy='max',
+        )
         self.main[0][0] = self.analyses
 
     def load_pdb_files(self, chain_a, chain_b) -> None:
         distances_a = albatrosy.chain_to_distances(chain_a)
         distances_b = albatrosy.chain_to_distances(chain_b)
-
-        self.data = albatrosy.pairwise_distance_between_conformations(
+        delta_distances = albatrosy.pairwise_distance_between_conformations(
             distances_a, distances_b
         )
+
+        self.data = {
+            'a': distances_a,
+            'b': distances_b,
+            'delta': delta_distances,
+        }
 
 
 def app() -> pn.pane:

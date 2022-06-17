@@ -43,6 +43,7 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
     async def upload_files(event=None):
         # TODO: better error messages (more specific to conformation)
         try:
+            # TODO: abstraction layer here
             structure_a = pdb_uploader_a.value_as_pdb
             chain_id_a = chain_input_a.value
             structure_b = pdb_uploader_b.value_as_pdb
@@ -80,12 +81,12 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
 
     widget = pn.Column(
         pn.Column(
-            pn.pane.Markdown('#### Conformation A:'),
+            '#### Conformation A:',
             pdb_uploader_a,
             chain_input_a,
         ),
         pn.Column(
-            pn.pane.Markdown('#### Conformation B:'),
+            '#### Conformation B:',
             pdb_uploader_b,
             chain_input_b,
         ),

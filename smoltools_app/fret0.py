@@ -2,10 +2,11 @@ from typing_extensions import Self
 import panel as pn
 import pandas as pd
 
+from smoltools import fret0
+
 # from templates import template
 from utils import colors, config
 from widgets import r0_finder, distance, e_fret, pdb_loader
-from smoltools import fret0
 
 
 class Dashboard(pn.template.BootstrapTemplate):
@@ -16,7 +17,7 @@ class Dashboard(pn.template.BootstrapTemplate):
             header_background=colors.DARK_GREY,
         )
         self.data = pd.DataFrame()
-        self.analyses = pn.Column()
+        self.analyses = pn.Column('<<< Upload files to analyze')
 
     def initialize(self) -> Self:
         self.main.append(
@@ -45,15 +46,14 @@ class Dashboard(pn.template.BootstrapTemplate):
             distances_a, distances_b
         )
 
-        self.load_analyses()
-
 
 def app() -> pn.pane:
     # configure external libraries
     config.configure_panel_extensions()
     config.configure_plotting_libraries()
 
-    return Dashboard().initialize().servable()
+    dashboard = Dashboard().initialize()
+    return dashboard.servable()
 
 
 app()

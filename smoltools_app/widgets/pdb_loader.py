@@ -11,7 +11,10 @@ from Bio.PDB.Structure import Structure
 
 
 class Dashboard(Protocol):
-    def load_pdb_files(self, structure_a, chain_a, structure_b, chain_b) -> None:
+    def load_pdb_files(self, chain_a, chain_b) -> None:
+        ...
+
+    def load_analyses(self) -> None:
         ...
 
 
@@ -52,6 +55,7 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
         chain_b = select.get_chain(structure_b, model=0, chain=chain_id_b)
 
         dashboard.load_pdb_files(chain_a, chain_b)
+        dashboard.load_analyses()
 
         # TODO: revert to default color (async sleep?)
         upload_button.button_type = 'success'

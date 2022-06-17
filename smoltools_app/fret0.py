@@ -1,3 +1,4 @@
+from typing_extensions import Self
 import panel as pn
 import pandas as pd
 
@@ -10,12 +11,14 @@ import fret0
 class Dashboard(pn.template.BootstrapTemplate):
     def __init__(self):
         super().__init__(
-            title='fret0',
+            site='SmolTools',
+            title='Fret0',
             header_background=colors.DARK_GREY,
         )
         self.data = pd.DataFrame()
         self.analyses = pn.Column()
 
+    def initialize(self) -> Self:
         self.main.append(
             pn.Row(
                 self.analyses,
@@ -25,6 +28,7 @@ class Dashboard(pn.template.BootstrapTemplate):
         self.sidebar.append(
             pdb_loader.make_widget(self),
         )
+        return self
 
     def load_analyses(self) -> None:
         self.analyses.extend(
@@ -45,25 +49,7 @@ def app() -> pn.pane:
     config.configure_panel_extensions()
     config.configure_plotting_libraries()
 
-    # load datasets
-
-    # mitocarta = data.load_mitocarta_gene_set()
-
-    # make widgets
-
-    # compose widgets
-    # outlier_dash = pn.Column(
-    #     width_policy='max',
-    # )
-
-    # TODO:
-    # create dashboard template and populate with widgets
-    # dashboard = template.smoltools_template(title='Outlier Analysis')
-    # dashboard.main.append(outlier_dash)
-
-    # return dashboard.servable()
-
-    return Dashboard().servable()
+    return Dashboard().initialize().servable()
 
 
 app()

@@ -4,7 +4,6 @@ import pandas as pd
 
 from smoltools import fret0
 
-# from templates import template
 from utils import colors, config
 from widgets import r0_finder, distance, e_fret, pdb_loader
 

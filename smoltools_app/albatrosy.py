@@ -4,7 +4,6 @@ import pandas as pd
 
 from smoltools import albatrosy
 
-# from templates import template
 from utils import colors, config
 from widgets import distance, pdb_loader
 
@@ -29,7 +28,7 @@ class Dashboard(pn.template.BootstrapTemplate):
         return self
 
     def load_analyses(self) -> None:
-        self.analyses = pn.Column(distance.make_distance_widget(self.data))
+        self.analyses = pn.Column(distance.make_distance_widget(self.data, cutoff=0))
         self.main[0][0] = self.analyses
 
     def load_pdb_files(self, chain_a, chain_b) -> None:

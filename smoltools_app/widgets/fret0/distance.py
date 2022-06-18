@@ -25,9 +25,9 @@ def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
     )
 
 
-def make_distance_widget(df: pd.DataFrame):
+def make_distance_widget(df: pd.DataFrame, cutoff: float = 20):
     delta_distance_input = pnw.FloatInput(
-        name='\u0394Distance cutoff (\u212B)', value=20
+        name='\u0394Distance cutoff (\u212B)', value=cutoff
     )
     # sasa_input = pnw.FloatSlider(name='SASA cutoff', start=0, end=1.0)
 
@@ -36,6 +36,7 @@ def make_distance_widget(df: pd.DataFrame):
     return pn.Card(
         delta_distance_input,
         pn.Tabs(('Table', distance_table)),
-        sizing_mode='stretch_both',
+        width=622,
         title='Pairwise Distances',
+        collapsible=False,
     )

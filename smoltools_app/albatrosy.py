@@ -1,11 +1,11 @@
-from typing_extensions import Self
 import panel as pn
 import pandas as pd
 
-# from templates import template
+from smoltools import albatrosy
+
 from utils import colors, config
-from widgets import distance, pdb_loader
-import fret0
+from widgets import pdb_loader
+from widgets.albatrosy import distance, noe_map, scatter
 
 
 class Dashboard(pn.template.BootstrapTemplate):
@@ -16,31 +16,31 @@ class Dashboard(pn.template.BootstrapTemplate):
             header_background=colors.LIGHT_BLUE,
         )
         self.data = pd.DataFrame()
-        # self.analyses = pn.Column()
-
-    def initialize(self) -> Self:
-        # self.main.append(
-        #     pn.Row(
-        #         self.analyses,
-        #     )
-        # )
-        self.sidebar.append(
-            pdb_loader.make_widget(self),
+        self.main.append(
+            pn.FlexBox(pdb_loader.make_widget(self)), justify_content='center'
         )
-        return self
 
     def load_analyses(self) -> None:
-        self.main.append(
-            [
-                distance.make_distance_widget(self.data),
-                # e_fret.make_e_fret_widget(self.data),
-            ]
+        self.analyses = pn.FlexBox(
+            distance.make_distance_widget(self.data),
+            noe_map.make_noe_widget(self.data),
+            scatter.make_distance_scatter_widget(self.data),
+            justify_content='center',
+        )
+        self.main[0][0] = self.analyses
+
+    def load_pdb_files(self, chain_a, chain_b) -> None:
+        distances_a = albatrosy.chain_to_distances(chain_a)
+        distances_b = albatrosy.chain_to_distances(chain_b)
+        delta_distances = albatrosy.pairwise_distance_between_conformations(
+            distances_a, distances_b
         )
 
-    def load_pdb_files(self, structure_a, chain_a, structure_b, chain_b) -> None:
-        self.data = fret0.pairwise_distances(structure_a, chain_a, structure_b, chain_b)
-
-        self.load_analyses()
+        self.data = {
+            'a': distances_a,
+            'b': distances_b,
+            'delta': delta_distances,
+        }
 
 
 def app() -> pn.pane:
@@ -48,10 +48,7 @@ def app() -> pn.pane:
     config.configure_panel_extensions()
     config.configure_plotting_libraries()
 
-    return Dashboard().initialize().servable()
+    return Dashboard().servable()
 
 
 app()
-
-# TODO: SASA import
-# TODO: altair heatmaps

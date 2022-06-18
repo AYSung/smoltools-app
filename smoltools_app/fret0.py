@@ -9,11 +9,13 @@ from widgets.fret0 import r0_finder, distance, e_fret
 
 
 class Dashboard(pn.template.BootstrapTemplate):
-    def __init__(self):
+    def __init__(self, **params):
         super().__init__(
             site='SmolTools',
             title='Fret0',
             header_background=colors.DARK_GREY,
+            **params,
+            # TODO: logo and favicon
         )
         self.data = pd.DataFrame()
         self.r0_widget = r0_finder.make_widget()

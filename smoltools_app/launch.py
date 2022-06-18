@@ -11,6 +11,7 @@ def main() -> None:
     }
 
     PORT = 5006
+    # TODO: index page
     # INDEX = str(paths.ROOT / 'index.html')
     # STATIC_DIRECTORIES = {'assets': paths.ASSETS}
 

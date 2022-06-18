@@ -9,11 +9,13 @@ from widgets.albatrosy import distance, noe_map, scatter
 
 
 class Dashboard(pn.template.BootstrapTemplate):
-    def __init__(self):
+    def __init__(self, **params):
         super().__init__(
             site='SmolTools',
             title='AlbaTROSY',
             header_background=colors.LIGHT_BLUE,
+            **params,
+            # TODO: logo and favicon
         )
         self.data = pd.DataFrame()
         self.main.append(

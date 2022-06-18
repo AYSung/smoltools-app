@@ -83,7 +83,6 @@ class PDBInputWidget(Viewer):
 
 def make_widget(dashboard: Dashboard) -> pn.Column:
     async def upload_files(event=None):
-        error_message = ''
         try:
             chain_a = conformation_a_widget.chain
             chain_b = conformation_b_widget.chain
@@ -92,19 +91,16 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
             dashboard.load_analyses()
         except ChainNotFound as e:
             upload_button.button_type = 'warning'
-            error_message += (
-                f'Chain {e.model_id}/{e.chain_id} not found for {e.input_id}\n'
-            )
+            status.value = f'Chain {e.model_id}/{e.chain_id} not found for {e.input_id}'
         except NoFileSelected as e:
             upload_button.button_type = 'warning'
-            error_message += f'Must select pdb file for {e.input_id}\n'
+            status.value = f'Must select pdb file for {e.input_id}'
         else:
-            widget[-1] = 'Success!'
+            status.value = 'Success!'
             upload_button.button_type = 'success'
             await asyncio.sleep(3)
+            status.value = ''
             upload_button.button_type = 'primary'
-        finally:
-            widget[-1] = error_message
 
     conformation_a_widget = PDBInputWidget('Conformation A')
     conformation_b_widget = PDBInputWidget('Conformation B')
@@ -114,12 +110,15 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
     )
     upload_button.on_click(upload_files)
 
+    status = pnw.StaticText(value='')
+
     widget = pn.Column(
         conformation_a_widget,
         pn.Spacer(height=10),
         conformation_b_widget,
         pn.Spacer(height=30),
-        pn.Row(upload_button, align='center'),
-        '',
+        upload_button,
+        status,
+        loading_indicator=True,
     )
     return widget

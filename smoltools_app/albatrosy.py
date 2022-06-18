@@ -15,6 +15,7 @@ class Dashboard(pn.template.BootstrapTemplate):
             site='SmolTools',
             title='AlbaTROSY',
             header_background=colors.LIGHT_BLUE,
+            sidebar_width=240,
         )
         self.data = pd.DataFrame()
         self.analyses = pn.FlexBox(

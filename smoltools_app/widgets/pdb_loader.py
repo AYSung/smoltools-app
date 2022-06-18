@@ -112,7 +112,7 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
 
     status = pnw.StaticText(value='')
 
-    widget = pn.Card(
+    return pn.Card(
         conformation_a_widget,
         pn.Spacer(height=10),
         conformation_b_widget,
@@ -122,4 +122,3 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
         collapsible=False,
         title='Upload Structures',
     )
-    return widget

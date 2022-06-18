@@ -17,7 +17,7 @@ class Dashboard(pn.template.BootstrapTemplate):
         )
         self.data = pd.DataFrame()
         self.main.append(
-            pn.FlexBox(pdb_loader.make_widget(self), justify_content='center')
+            pn.FlexBox(pdb_loader.make_widget(self)), justify_content='center'
         )
 
     def load_analyses(self) -> None:
@@ -25,8 +25,6 @@ class Dashboard(pn.template.BootstrapTemplate):
             distance.make_distance_widget(self.data),
             noe_map.make_noe_widget(self.data),
             scatter.make_distance_scatter_widget(self.data),
-            width_policy='max',
-            flex_wrap='wrap',
             justify_content='center',
         )
         self.main[0][0] = self.analyses
@@ -54,6 +52,3 @@ def app() -> pn.pane:
 
 
 app()
-
-# TODO: SASA import
-# TODO: altair heatmaps

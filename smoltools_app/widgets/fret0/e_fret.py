@@ -6,29 +6,6 @@ import panel.widgets as pnw
 from smoltools import fret0
 
 
-def make_e_fret_widget(df: pd.DataFrame) -> pn.Card:
-    r0_input = pnw.FloatInput(name='R0 of FRET pair', value=50)
-    delta_e_fret_cutoff_input = pnw.FloatSlider(
-        name='\u0394E_fret cutoff', start=0, end=1.0, value=0.5
-    )
-
-    e_fret_table = pn.bind(
-        make_e_fret_table,
-        df=df,
-        r0=r0_input,
-        cutoff=delta_e_fret_cutoff_input,
-    )
-
-    return pn.Card(
-        r0_input,
-        delta_e_fret_cutoff_input,
-        pn.Tabs(('Table', e_fret_table)),
-        sizing_mode='stretch_both',
-        title='Pairwise E_fret',
-        collapsible=False,
-    )
-
-
 def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFrame:
     e_fret_table = pnw.DataFrame(
         value=fret0.e_fret_between_conformations(df, r0).loc[
@@ -58,3 +35,26 @@ def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFra
     )
 
     return e_fret_table
+
+
+def make_e_fret_widget(df: pd.DataFrame) -> pn.Card:
+    r0_input = pnw.FloatInput(name='R0 of FRET pair', value=50)
+    delta_e_fret_cutoff_input = pnw.FloatSlider(
+        name='\u0394E_fret cutoff', start=0, end=1.0, value=0.5
+    )
+
+    e_fret_table = pn.bind(
+        make_e_fret_table,
+        df=df,
+        r0=r0_input,
+        cutoff=delta_e_fret_cutoff_input,
+    )
+
+    return pn.Card(
+        r0_input,
+        delta_e_fret_cutoff_input,
+        pn.Tabs(('Table', e_fret_table)),
+        width=622,
+        title='Pairwise E_fret',
+        collapsible=False,
+    )

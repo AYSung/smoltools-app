@@ -36,7 +36,7 @@ def make_distance_widget(df: pd.DataFrame, cutoff: float = 20):
     return pn.Card(
         delta_distance_input,
         pn.Tabs(('Table', distance_table)),
-        sizing_mode='stretch_both',
+        width=622,
         title='Pairwise Distances',
         collapsible=False,
     )

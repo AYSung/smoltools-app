@@ -1,4 +1,3 @@
-from typing_extensions import Self
 import panel as pn
 import pandas as pd
 
@@ -17,24 +16,18 @@ class Dashboard(pn.template.BootstrapTemplate):
             header_background=colors.DARK_GREY,
         )
         self.data = pd.DataFrame()
-        self.analyses = pn.Column('<<< Upload files to analyze')
-
-    def initialize(self) -> Self:
+        self.r0_widget = r0_finder.make_widget()
         self.main.append(
-            pn.Row(
-                self.analyses,
-                r0_finder.make_widget(),
-            )
+            pn.FlexBox(
+                pdb_loader.make_widget(self), self.r0_widget, justify_content='center'
+            ),
         )
-        self.sidebar.append(
-            pdb_loader.make_widget(self),
-        )
-        return self
 
     def load_analyses(self) -> None:
-        self.analyses = pn.Column(
+        self.analyses = pn.FlexBox(
             distance.make_distance_widget(self.data),
             e_fret.make_e_fret_widget(self.data),
+            justify_content='center',
         )
         self.main[0][0] = self.analyses
 
@@ -52,11 +45,10 @@ def app() -> pn.pane:
     config.configure_panel_extensions()
     config.configure_plotting_libraries()
 
-    dashboard = Dashboard().initialize()
-    return dashboard.servable()
+    return Dashboard().servable()
 
 
 app()
 
+# TODO: Add Altair plots
 # TODO: SASA import
-# TODO: altair heatmaps

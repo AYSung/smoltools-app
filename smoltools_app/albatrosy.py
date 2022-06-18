@@ -1,4 +1,3 @@
-from typing_extensions import Self
 import panel as pn
 import pandas as pd
 
@@ -15,21 +14,11 @@ class Dashboard(pn.template.BootstrapTemplate):
             site='SmolTools',
             title='AlbaTROSY',
             header_background=colors.LIGHT_BLUE,
-            sidebar_width=240,
         )
         self.data = pd.DataFrame()
-        self.analyses = pn.FlexBox(
-            '#### <<< Upload files to analyze', width_policy='max'
-        )
-
-    def initialize(self) -> Self:
         self.main.append(
-            self.analyses,
+            pn.FlexBox(pdb_loader.make_widget(self), justify_content='center')
         )
-        self.sidebar.append(
-            pdb_loader.make_widget(self),
-        )
-        return self
 
     def load_analyses(self) -> None:
         self.analyses = pn.FlexBox(
@@ -38,6 +27,7 @@ class Dashboard(pn.template.BootstrapTemplate):
             scatter.make_distance_scatter_widget(self.data),
             width_policy='max',
             flex_wrap='wrap',
+            justify_content='center',
         )
         self.main[0][0] = self.analyses
 
@@ -60,8 +50,7 @@ def app() -> pn.pane:
     config.configure_panel_extensions()
     config.configure_plotting_libraries()
 
-    dashboard = Dashboard().initialize()
-    return dashboard.servable()
+    return Dashboard().servable()
 
 
 app()

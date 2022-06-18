@@ -48,7 +48,7 @@ class PDBInputWidget(Viewer):
     def __init__(self, structure_id: str, **params):
         self.structure_id = structure_id
         super().__init__(**params)
-        self._pdb_file_input = PDBFileInput(structure_id)
+        self._pdb_file_input = PDBFileInput(structure_id=structure_id)
         self._model_input = pnw.IntInput(name='Model', value=0, width=60)
         self._chain_input = pnw.Select(
             name='Chain',
@@ -57,7 +57,7 @@ class PDBInputWidget(Viewer):
             width=60,
         )
         self._layout = pn.Column(
-            f'#### {self.structure_id}:',
+            f'**{self.structure_id}:**',
             self._pdb_file_input,
             pn.Row(
                 self._model_input,
@@ -88,7 +88,6 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
             chain_b = conformation_b_widget.chain
 
             dashboard.load_pdb_files(chain_a, chain_b)
-            dashboard.load_analyses()
         except ChainNotFound as e:
             upload_button.button_type = 'warning'
             status.value = f'Chain {e.model_id}/{e.chain_id} not found for {e.input_id}'
@@ -98,9 +97,10 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
         else:
             status.value = 'Success!'
             upload_button.button_type = 'success'
-            await asyncio.sleep(3)
+            await asyncio.sleep(2)
             status.value = ''
             upload_button.button_type = 'primary'
+            dashboard.load_analyses()
 
     conformation_a_widget = PDBInputWidget('Conformation A')
     conformation_b_widget = PDBInputWidget('Conformation B')
@@ -112,13 +112,14 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
 
     status = pnw.StaticText(value='')
 
-    widget = pn.Column(
+    widget = pn.Card(
         conformation_a_widget,
         pn.Spacer(height=10),
         conformation_b_widget,
-        pn.Spacer(height=30),
-        upload_button,
-        status,
-        loading_indicator=True,
+        pn.Spacer(height=20),
+        pn.Row(upload_button, align='center'),
+        pn.Row(status, align='center'),
+        collapsible=False,
+        title='Upload Structures',
     )
     return widget

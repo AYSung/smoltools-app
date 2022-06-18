@@ -30,6 +30,9 @@ class Dashboard(Protocol):
     def load_analyses(self) -> None:
         ...
 
+    def show_analyses(self) -> None:
+        ...
+
 
 class PDBFileInput(pnw.FileInput):
     def __init__(self, structure_id: str, **params):
@@ -88,6 +91,7 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
             chain_b = conformation_b_widget.chain
 
             dashboard.load_pdb_files(chain_a, chain_b)
+            dashboard.load_analyses()
         except ChainNotFound as e:
             upload_button.button_type = 'warning'
             status.value = f'Chain {e.model_id}/{e.chain_id} not found for {e.input_id}'
@@ -97,10 +101,8 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
         else:
             status.value = 'Success!'
             upload_button.button_type = 'success'
-            await asyncio.sleep(2)
-            status.value = ''
-            upload_button.button_type = 'primary'
-            dashboard.load_analyses()
+            await asyncio.sleep(1)
+            dashboard.show_analyses()
 
     conformation_a_widget = PDBInputWidget('Conformation A')
     conformation_b_widget = PDBInputWidget('Conformation B')

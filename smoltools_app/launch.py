@@ -2,13 +2,9 @@ import panel as pn
 
 import fret0
 import albatrosy
-from utils import config
 
 
 def main() -> None:
-    config.configure_panel_extensions()
-    config.configure_plotting_libraries()
-
     APPS = {
         'fret0': fret0.app,
         'albaTROSY': albatrosy.app,

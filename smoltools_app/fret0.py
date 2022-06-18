@@ -29,6 +29,8 @@ class Dashboard(pn.template.BootstrapTemplate):
             e_fret.make_e_fret_widget(self.data),
             justify_content='center',
         )
+
+    def show_analyses(self) -> None:
         self.main[0][0] = self.analyses
 
     def load_pdb_files(self, chain_a, chain_b) -> None:

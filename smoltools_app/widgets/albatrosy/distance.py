@@ -22,7 +22,7 @@ def make_distance_table(df: pd.DataFrame) -> pnw.DataFrame:
             'delta_distance': NumberFormatter(format='0.0'),
         },
         show_index=False,
-        height=600,
+        height=650,
         disabled=True,
     )
 
@@ -39,9 +39,10 @@ def make_distance_widget(data: dict[str, pd.DataFrame]):
             ('\u0394Distance', pn.pane.Vega(delta_distance_map)),
             ('Conformation A', pn.pane.Vega(distance_map_a)),
             ('Conformation B', pn.pane.Vega(distance_map_b)),
-            ('Table', distance_table),
+            ('Table', pn.Row(distance_table, align='center')),
+            align='center',
         ),
-        sizing_mode='stretch_both',
         title='Pairwise Distances',
         collapsible=False,
+        width=800,
     )

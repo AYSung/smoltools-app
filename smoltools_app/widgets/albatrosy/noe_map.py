@@ -16,8 +16,9 @@ def make_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
             ('Combined', pn.pane.Vega(combined_noe_map)),
             ('Conformation A', pn.pane.Vega(noe_map_a)),
             ('Conformation B', pn.pane.Vega(noe_map_b)),
+            align='center',
         ),
         title='NOE Maps',
         collapsible=False,
-        sizing_mode='stretch_width',
+        width=800,
     )

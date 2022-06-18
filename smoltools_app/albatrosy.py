@@ -17,7 +17,7 @@ class Dashboard(pn.template.BootstrapTemplate):
             header_background=colors.LIGHT_BLUE,
         )
         self.data = pd.DataFrame()
-        self.analyses = pn.Column(
+        self.analyses = pn.FlexBox(
             '#### <<< Upload files to analyze', width_policy='max'
         )
 
@@ -31,12 +31,12 @@ class Dashboard(pn.template.BootstrapTemplate):
         return self
 
     def load_analyses(self) -> None:
-        # TODO: make widgets rearrange in grid
-        self.analyses = pn.Column(
+        self.analyses = pn.FlexBox(
             distance.make_distance_widget(self.data),
             noe_map.make_noe_widget(self.data),
             scatter.make_distance_scatter_widget(self.data),
             width_policy='max',
+            flex_wrap='wrap',
         )
         self.main[0][0] = self.analyses
 

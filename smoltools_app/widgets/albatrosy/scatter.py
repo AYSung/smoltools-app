@@ -9,5 +9,5 @@ def make_distance_scatter_widget(data: dict[str, pd.DataFrame]):
         pn.pane.Vega(albatrosy.plots.distance_scatter(data['delta'], 15)),
         title='Distance Scatter',
         collapsible=False,
-        sizing_mode='stretch_width',
+        width=800,
     )

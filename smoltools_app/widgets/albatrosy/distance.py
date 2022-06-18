@@ -34,12 +34,15 @@ def make_distance_widget(data: dict[str, pd.DataFrame]):
     distance_map_b = albatrosy.plots.distance_map(data['b'])
     delta_distance_map = albatrosy.plots.delta_distance_map(data['delta'])
 
+    binned_distance_map = albatrosy.plots.binned_distance_map(data['a'], bin_size=20)
+
     return pn.Card(
         pn.Tabs(
             ('\u0394Distance', pn.pane.Vega(delta_distance_map)),
             ('Conformation A', pn.pane.Vega(distance_map_a)),
             ('Conformation B', pn.pane.Vega(distance_map_b)),
             ('Table', pn.Row(distance_table, align='center')),
+            ('Binned (beta)', pn.pane.Vega(binned_distance_map)),
             align='center',
         ),
         title='Pairwise Distances',

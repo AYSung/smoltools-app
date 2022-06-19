@@ -19,7 +19,7 @@ class Dashboard(pn.template.BootstrapTemplate):
         )
         self.data = pd.DataFrame()
         self.main.append(
-            pn.FlexBox(pdb_loader.make_widget(self), justify_content='center')
+            pn.FlexBox(pdb_loader.PDBLoader(self), justify_content='center')
         )
 
     def load_analyses(self) -> None:

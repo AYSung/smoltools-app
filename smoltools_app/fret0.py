@@ -21,7 +21,7 @@ class Dashboard(pn.template.BootstrapTemplate):
         self.r0_widget = r0_finder.make_widget()
         self.main.append(
             pn.FlexBox(
-                pdb_loader.make_widget(self), self.r0_widget, justify_content='center'
+                pdb_loader.PDBLoader(self), self.r0_widget, justify_content='center'
             ),
         )
 

@@ -77,41 +77,44 @@ class PDBInputWidget(Viewer):
             raise ChainNotFound(structure_id, model, chain_id)
 
 
-def make_widget(dashboard: Dashboard) -> pn.Column:
-    async def upload_files(event=None):
-        try:
-            chain_a = conformation_a_widget.chain
-            chain_b = conformation_b_widget.chain
+class PDBLoader(Viewer):
+    def __init__(self, dashboard: Dashboard, **params):
+        super().__init__(**params)
+        self._pdb_input_a = PDBInputWidget('Conformation A')
+        self._pbd_input_b = PDBInputWidget('Conformation B')
 
-            dashboard.load_pdb_files(chain_a, chain_b)
-            dashboard.load_analyses()
+        self._button = pnw.Button(name='Upload', button_type='primary', width=150)
+        self._button.on_click(self.upload_files)
+        self._status = pnw.StaticText()
+
+        self._dashboard = dashboard
+        self._layout = pn.Card(
+            self._pdb_input_a,
+            pn.Spacer(height=10),
+            self._pbd_input_b,
+            pn.Spacer(height=10),
+            pn.Row(self._button, align='center'),
+            pn.Row(self._status, align='center'),
+            collapsible=False,
+            title='Upload Structures',
+        )
+
+    async def upload_files(self, event=None):
+        try:
+            chain_a = self._pdb_input_a.chain
+            chain_b = self._pbd_input_b.chain
+
+            self._dashboard.load_pdb_files(chain_a, chain_b)
+            self._dashboard.load_analyses()
         except (NoFileSelected, ChainNotFound) as e:
-            upload_button.button_type = 'warning'
-            status.value = f'Error: {e.args[0]}'
+            self._button.button_type = 'warning'
+            self._status.value = f'Error: {e.args[0]}'
             # TODO: error handling for empty residue list?
         else:
-            status.value = 'Success!'
-            upload_button.button_type = 'success'
+            self._status.value = 'Success!'
+            self._button.button_type = 'success'
             await asyncio.sleep(1)
-            dashboard.show_analyses()
+            self._dashboard.show_analyses()
 
-    conformation_a_widget = PDBInputWidget('Conformation A')
-    conformation_b_widget = PDBInputWidget('Conformation B')
-
-    upload_button = upload_button = pnw.Button(
-        name='Upload', button_type='primary', width=150
-    )
-    upload_button.on_click(upload_files)
-
-    status = pnw.StaticText()
-
-    return pn.Card(
-        conformation_a_widget,
-        pn.Spacer(height=10),
-        conformation_b_widget,
-        pn.Spacer(height=10),
-        pn.Row(upload_button, align='center'),
-        pn.Row(status, align='center'),
-        collapsible=False,
-        title='Upload Structures',
-    )
+    def __panel__(self) -> pn.panel:
+        return self._layout

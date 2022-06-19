@@ -12,7 +12,7 @@ def main() -> None:
         'albaTROSY': albatrosy.app,
     }
 
-    PORT = sys.argv[1]
+    PORT = int(sys.argv[1])
 
     # INDEX = str(paths.ROOT / 'index.html')
     # STATIC_DIRECTORIES = {'assets': paths.ASSETS}

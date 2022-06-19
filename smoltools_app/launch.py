@@ -17,6 +17,7 @@ def main() -> None:
 
     pn.serve(
         APPS,
+        address='0.0.0.0',
         # port=PORT,
         # index=INDEX,
         # static_dirs=STATIC_DIRECTORIES,

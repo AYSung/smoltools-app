@@ -3,24 +3,20 @@ from typing import Protocol
 import panel as pn
 import panel.widgets as pnw
 from panel.viewable import Viewer
+from pathlib import Path
 import string
-
-from smoltools.pdbtools import load, select
 
 from Bio.PDB.Structure import Structure
 from Bio.PDB.Chain import Chain
 
+from smoltools.pdbtools import load, select
+from smoltools.pdbtools.exceptions import ChainNotFound
+
 
 class NoFileSelected(Exception):
     def __init__(self, input_id: str):
-        self.input_id = input_id
-
-
-class ChainNotFound(Exception):
-    def __init__(self, input_id, model_id, chain_id):
-        self.input_id = input_id
-        self.model_id = model_id
-        self.chain_id = chain_id
+        message = f'Please select pdb file for {input_id}'
+        super().__init__(message)
 
 
 class Dashboard(Protocol):
@@ -34,24 +30,11 @@ class Dashboard(Protocol):
         ...
 
 
-class PDBFileInput(pnw.FileInput):
-    def __init__(self, structure_id: str, **params):
-        super().__init__(accept='.pdb', **params)
-        self.structure_id = structure_id
-
-    @property
-    def value_as_pdb(self) -> Structure:
-        if self.value is None:
-            raise NoFileSelected(self.structure_id)
-        else:
-            return load.read_pdb_from_bytes(self.structure_id, self.value)
-
-
 class PDBInputWidget(Viewer):
-    def __init__(self, structure_id: str, **params):
-        self.structure_id = structure_id
+    def __init__(self, widget_id: str, **params):
+        self.widget_id = widget_id
         super().__init__(**params)
-        self._pdb_file_input = PDBFileInput(structure_id=structure_id)
+        self._pdb_file_input = pnw.FileInput(accept='.pdb')
         self._model_input = pnw.IntInput(name='Model', value=0, width=60)
         self._chain_input = pnw.Select(
             name='Chain',
@@ -60,7 +43,7 @@ class PDBInputWidget(Viewer):
             width=60,
         )
         self._layout = pn.Column(
-            f'**{self.structure_id}:**',
+            f'**{self.widget_id}:**',
             self._pdb_file_input,
             pn.Row(
                 self._model_input,
@@ -72,8 +55,17 @@ class PDBInputWidget(Viewer):
         return self._layout
 
     @property
+    def pdb_structure(self) -> Structure:
+        try:
+            return load.read_pdb_from_bytes(
+                self._pdb_file_input.filename, self._pdb_file_input.value
+            )
+        except AttributeError:
+            raise NoFileSelected(self.widget_id)
+
+    @property
     def chain(self) -> Chain:
-        structure = self._pdb_file_input.value_as_pdb
+        structure = self.pdb_structure
 
         model = self._model_input.value
         chain_id = self._chain_input.value
@@ -81,7 +73,8 @@ class PDBInputWidget(Viewer):
         try:
             return select.get_chain(structure, model, chain_id)
         except KeyError:
-            raise ChainNotFound(self.structure_id, model, chain_id)
+            structure_id = Path(self._pdb_file_input.filename).stem
+            raise ChainNotFound(structure_id, model, chain_id)
 
 
 def make_widget(dashboard: Dashboard) -> pn.Column:
@@ -92,12 +85,10 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
 
             dashboard.load_pdb_files(chain_a, chain_b)
             dashboard.load_analyses()
-        except ChainNotFound as e:
+        except (NoFileSelected, ChainNotFound) as e:
             upload_button.button_type = 'warning'
-            status.value = f'Chain {e.model_id}/{e.chain_id} not found for {e.input_id}'
-        except NoFileSelected as e:
-            upload_button.button_type = 'warning'
-            status.value = f'Must select pdb file for {e.input_id}'
+            status.value = f'Error: {e.args[0]}'
+            # TODO: error handling for empty residue list?
         else:
             status.value = 'Success!'
             upload_button.button_type = 'success'

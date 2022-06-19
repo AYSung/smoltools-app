@@ -10,14 +10,14 @@ def main() -> None:
         'albaTROSY': albatrosy.app,
     }
 
-    # PORT = 5006
+    PORT = 5006
     # TODO: index page
     # INDEX = str(paths.ROOT / 'index.html')
     # STATIC_DIRECTORIES = {'assets': paths.ASSETS}
 
     pn.serve(
         APPS,
-        # port=PORT,
+        port=PORT,
         # index=INDEX,
         # static_dirs=STATIC_DIRECTORIES,
     )

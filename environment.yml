@@ -8,6 +8,5 @@ dependencies:
   - scipy=1.8.0
   - biopython=1.79
   - panel=0.13
-  # - pip:
-  #   - smoltools=0.0.1
-  # install locally
+  - pip:
+    - smoltools=1.0.0

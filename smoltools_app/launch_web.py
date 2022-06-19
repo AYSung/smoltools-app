@@ -1,4 +1,4 @@
-import sys
+import os
 
 import panel as pn
 
@@ -12,7 +12,7 @@ def main() -> None:
         'albaTROSY': albatrosy.app,
     }
 
-    PORT = int(sys.argv[1])
+    PORT = int(os.environ.get("PORT"))
 
     # INDEX = str(paths.ROOT / 'index.html')
     # STATIC_DIRECTORIES = {'assets': paths.ASSETS}

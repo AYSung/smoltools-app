@@ -1,1 +1,1 @@
-web: python3 smoltools_app/launch_web.py
+web: python3 smoltools_app/launch_web.py $PORT

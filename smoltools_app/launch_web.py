@@ -1,3 +1,5 @@
+import sys
+
 import panel as pn
 
 import fret0
@@ -10,6 +12,8 @@ def main() -> None:
         'albaTROSY': albatrosy.app,
     }
 
+    PORT = sys.argv[1]
+
     # INDEX = str(paths.ROOT / 'index.html')
     # STATIC_DIRECTORIES = {'assets': paths.ASSETS}
 
@@ -17,7 +21,7 @@ def main() -> None:
         APPS,
         address='0.0.0.0',
         websocket_origin='smoltools.herokuapp.com',
-        # port=PORT,
+        port=PORT,
         # index=INDEX,
         # static_dirs=STATIC_DIRECTORIES,
     )

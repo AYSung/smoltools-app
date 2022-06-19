@@ -1,1 +1,1 @@
-web: panel serve --address="0.0.0.0" --port=$PORT smoltools-app/launch.py --allow-websocket-origin=smoltools.herokuapp.com
+web: python3 smoltools_app/launch.py

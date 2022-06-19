@@ -103,7 +103,7 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
     )
     upload_button.on_click(upload_files)
 
-    status = pnw.StaticText(value='')
+    status = pnw.StaticText()
 
     return pn.Card(
         conformation_a_widget,

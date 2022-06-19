@@ -14,7 +14,6 @@ def main() -> None:
     }
 
     # INDEX = str(paths.ROOT / 'index.html')
-    STATIC_DIRECTORIES = {'assets': paths.ASSETS}
 
     ON_HEROKU = os.environ.get('ON_HEROKU')
     if ON_HEROKU:
@@ -26,12 +25,16 @@ def main() -> None:
         }
     else:
         PORT = 5006
-        server_config = {'port': PORT}
+        STATIC_DIRECTORIES = {'assets': paths.ASSETS}
+
+        server_config = {
+            'port': PORT,
+            'static_dirs': STATIC_DIRECTORIES,
+        }
 
     pn.serve(
         APPS,
         # index=INDEX,
-        static_dirs=STATIC_DIRECTORIES,
         **server_config,
     )
 

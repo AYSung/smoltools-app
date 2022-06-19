@@ -109,7 +109,7 @@ def make_widget(dashboard: Dashboard) -> pn.Column:
         conformation_a_widget,
         pn.Spacer(height=10),
         conformation_b_widget,
-        pn.Spacer(height=20),
+        pn.Spacer(height=10),
         pn.Row(upload_button, align='center'),
         pn.Row(status, align='center'),
         collapsible=False,

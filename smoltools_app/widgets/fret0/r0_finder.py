@@ -55,6 +55,6 @@ def make_widget() -> pn.Card:
         pn.Row(distance_a_input, distance_b_input, align='center'),
         pn.Row(chart, align='center'),
         pn.Row(table, align='center'),
-        title='R0 finder',
+        title='FRET pair finder',
         collapsible=False,
     )

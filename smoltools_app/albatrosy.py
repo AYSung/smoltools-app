@@ -9,15 +9,17 @@ from widgets.albatrosy import distance, noe_map, scatter
 
 
 class Dashboard(pn.template.BootstrapTemplate):
-    def __init__(self):
+    def __init__(self, **params):
         super().__init__(
             site='SmolTools',
             title='AlbaTROSY',
             header_background=colors.LIGHT_BLUE,
+            **params,
+            # TODO: logo and favicon
         )
         self.data = pd.DataFrame()
         self.main.append(
-            pn.FlexBox(pdb_loader.make_widget(self)), justify_content='center'
+            pn.FlexBox(pdb_loader.PDBLoader(self), justify_content='center')
         )
 
     def load_analyses(self) -> None:
@@ -27,6 +29,8 @@ class Dashboard(pn.template.BootstrapTemplate):
             scatter.make_distance_scatter_widget(self.data),
             justify_content='center',
         )
+
+    def show_analyses(self) -> None:
         self.main[0][0] = self.analyses
 
     def load_pdb_files(self, chain_a, chain_b) -> None:

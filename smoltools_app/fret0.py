@@ -9,17 +9,19 @@ from widgets.fret0 import r0_finder, distance, e_fret
 
 
 class Dashboard(pn.template.BootstrapTemplate):
-    def __init__(self):
+    def __init__(self, **params):
         super().__init__(
             site='SmolTools',
             title='Fret0',
             header_background=colors.DARK_GREY,
+            **params,
+            # TODO: logo and favicon
         )
         self.data = pd.DataFrame()
         self.r0_widget = r0_finder.make_widget()
         self.main.append(
             pn.FlexBox(
-                pdb_loader.make_widget(self), self.r0_widget, justify_content='center'
+                pdb_loader.PDBLoader(self), self.r0_widget, justify_content='center'
             ),
         )
 
@@ -29,6 +31,8 @@ class Dashboard(pn.template.BootstrapTemplate):
             e_fret.make_e_fret_widget(self.data),
             justify_content='center',
         )
+
+    def show_analyses(self) -> None:
         self.main[0][0] = self.analyses
 
     def load_pdb_files(self, chain_a, chain_b) -> None:

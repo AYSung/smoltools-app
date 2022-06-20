@@ -11,8 +11,8 @@ def main() -> None:
     INDEX = str(paths.ROOT / 'index.html')
 
     APPS = {
-        'fret0': fret0.app,
-        'albaTROSY': albatrosy.app,
+        'Fret0': fret0.app,
+        'AlbaTROSY': albatrosy.app,
     }
 
     ON_HEROKU = os.environ.get('ON_HEROKU')
@@ -22,7 +22,6 @@ def main() -> None:
             'address': '0.0.0.0',
             'websocket_origin': 'smoltools.herokuapp.com',
             'port': PORT,
-            'index': INDEX,
         }
     else:
         PORT = 5006
@@ -30,12 +29,12 @@ def main() -> None:
 
         server_config = {
             'port': PORT,
-            'index': INDEX,
             'static_dirs': STATIC_DIRECTORIES,
         }
 
     pn.serve(
         APPS,
+        index=INDEX,
         **server_config,
     )
 

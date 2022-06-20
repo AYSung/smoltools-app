@@ -243,7 +243,7 @@
         </section>
         <section id="cards">
             <ul class="cards-grid">
-                {% for item in sorted(items, key=lambda item: item[1:].replace("_", " ").title()) %}
+                {% for item in sorted(items, key=lambda item: item[1:].replace("_", " ")) %}
                 <li class="card">
                     <a class="card-link" href=".{{ item }}" id="{{ item }}">
                         <fast-card class="gallery-item">
@@ -255,7 +255,7 @@
                                     d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm13 2v2H1V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zM2 14a1 1 0 0 1-1-1V6h14v7a1 1 0 0 1-1 1H2z" />
                             </svg>
                             <div class="card-content">
-                                <h2 class="card-header">{{ item[1:].replace("_", " ").title() }}</h2>
+                                <h2 class="card-header">{{ item[1:].replace("_", " ") }}</h2>
                             </div>
                         </fast-card>
                     </a>
@@ -264,14 +264,14 @@
             </ul>
         </section>
         <section>
-            <footer>
+            <footer style="font-family: Lato">
                 <div style="color: white; border-top: 1px ridge; padding-top: 1em; align-items: center;">
-                    <!-- <fast-divider style="padding-bottom: 0.3em;"></fast-divider> -->
-                    <fast-anchor id="title" href="https://kecklab.bmolchem.wisc.edu/" appearance="neutral"
-                        style="float: center;" target="_self">
-                        <h2 style="color:rgb(5, 5, 36)">Keck Lab</h2>
+                    <fast-anchor appearance="neutral" href="https://kecklab.bmolchem.wisc.edu/" style="float: center;"
+                        target="_self">
+                        <h1>Keck Lab @ UW Madison</h1>
                         <!-- <img id="panel-logo" src="assets/lab_logo.png" /> -->
                     </fast-anchor>
+                    <h3 style="color: rgb(5, 5, 36)">email: andrew.sung@wisc.edu</h3>
                 </div>
             </footer>
         </section>

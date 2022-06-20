@@ -34,37 +34,7 @@
     <meta name="theme-color" content="#ffffff">
     <script type="module" src="https://unpkg.com/@microsoft/fast-colors@5.1.0"></script>
     <script type="module" src="https://unpkg.com/@microsoft/fast-components@1.13.0"></script>
-    <script type="text/javascript">
-        function setParamsFromSearch(text) {
-            const params = new URLSearchParams(location.search);
-            if (text === "") {
-                params.delete("search")
-            } else {
-                params.set('search', text);
-            }
-            window.history.replaceState({}, '', `${location.pathname}?${params}`);
-        }
-        function hideCards(text) {
-            text = text.toLowerCase();
-            const cards = document.getElementsByTagName("li")
-            for (const card of cards) {
-                if (text === "" || card.innerHTML.toLowerCase().includes(text)) {
-                    card.style.display = ""
-                } else { card.style.display = "none" }
-            }
-
-            setParamsFromSearch(text)
-        }
-        function setSearchFromParams() {
-            const params = new URLSearchParams(window.location.search)
-            if (params.has('search')) {
-                const search = params.get('search')
-                const searchEl = document.getElementById("search-input")
-                searchEl.value = search
-                hideCards(search)
-            }
-        }
-    </script>
+    <!-- <script type="text/javascript"></script> -->
     <style>
         html {
             height: 100%;
@@ -113,7 +83,6 @@
             padding: 2rem 4rem;
             display: grid;
             align-items: center;
-            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
         }
 
         .header article {
@@ -230,17 +199,12 @@
     <fast-design-system-provider id="body-design-provider" use-defaults background-color="#ffffff">
         <fast-design-system-provider id="header-design-provider" use-defaults background-color="#000000">
             <section class="header">
-                <div class="header-grid">
-                    <h1 style="font-size: 3em; font-family: Lato; color:white; opacity: 1.0; text-align: center;">
-                        SmolTools
-                    </h1>
+                <div class="header-grid" style="font-family: Lato; color:white; opacity: 1.0; text-align: center;">
+                    <h1 style="font-size: 3em;">SmolTools</h1>
+                    <h3>A collection of apps for designing single-molecule experiments</h3>
                 </div>
             </section>
         </fast-design-system-provider>
-        <section class="search">
-            <fast-text-field id="search-input" placeholder="search" onInput="hideCards(event.target.value)">
-            </fast-text-field>
-        </section>
         <section id="cards">
             <ul class="cards-grid">
                 {% for item in sorted(items, key=lambda item: item[1:].replace("_", " ")) %}
@@ -264,8 +228,9 @@
             </ul>
         </section>
         <section>
-            <footer style="font-family: Lato">
-                <div style="color: white; border-top: 1px ridge; padding-top: 1em; align-items: center;">
+            <footer>
+                <div
+                    style="font-family: Lato; color: white; border-top: 1px ridge; padding-top: 1em; align-items: center;">
                     <fast-anchor appearance="neutral" href="https://kecklab.bmolchem.wisc.edu/" style="float: center;"
                         target="_self">
                         <h1>Keck Lab @ UW Madison</h1>
@@ -276,9 +241,6 @@
             </footer>
         </section>
     </fast-design-system-provider>
-    <script type="text/javascript">
-        setSearchFromParams()
-    </script>
 </body>
 
 </html>

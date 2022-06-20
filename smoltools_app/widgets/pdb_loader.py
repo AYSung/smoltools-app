@@ -4,7 +4,8 @@ import panel.widgets as pnw
 from panel.viewable import Viewer
 from pathlib import Path
 import string
-import time
+
+# import time
 
 from Bio.PDB.Structure import Structure
 from Bio.PDB.Chain import Chain
@@ -113,7 +114,7 @@ class PDBLoader(Viewer):
         else:
             self._status.value = 'Success!'
             self._button.button_type = 'success'
-            time.sleep(1)
+            # time.sleep(0.5)
             self._dashboard.show_analyses()
 
     def __panel__(self) -> pn.panel:

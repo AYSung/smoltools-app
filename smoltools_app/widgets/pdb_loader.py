@@ -1,10 +1,10 @@
-import asyncio
 from typing import Protocol
 import panel as pn
 import panel.widgets as pnw
 from panel.viewable import Viewer
 from pathlib import Path
 import string
+import time
 
 from Bio.PDB.Structure import Structure
 from Bio.PDB.Chain import Chain
@@ -99,7 +99,7 @@ class PDBLoader(Viewer):
             title='Upload Structures',
         )
 
-    async def upload_files(self, event=None):
+    def upload_files(self, event=None):
         try:
             chain_a = self._pdb_input_a.chain
             chain_b = self._pbd_input_b.chain
@@ -113,7 +113,7 @@ class PDBLoader(Viewer):
         else:
             self._status.value = 'Success!'
             self._button.button_type = 'success'
-            await asyncio.sleep(1)
+            time.sleep(1)
             self._dashboard.show_analyses()
 
     def __panel__(self) -> pn.panel:

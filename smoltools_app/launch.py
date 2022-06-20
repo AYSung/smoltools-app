@@ -4,16 +4,16 @@ import panel as pn
 
 import fret0
 import albatrosy
-from smoltools_app.utils import paths
+from utils import paths
 
 
 def main() -> None:
+    INDEX = str(paths.ROOT / 'index.html')
+
     APPS = {
         'fret0': fret0.app,
         'albaTROSY': albatrosy.app,
     }
-
-    # INDEX = str(paths.ROOT / 'index.html')
 
     ON_HEROKU = os.environ.get('ON_HEROKU')
     if ON_HEROKU:
@@ -22,6 +22,7 @@ def main() -> None:
             'address': '0.0.0.0',
             'websocket_origin': 'smoltools.herokuapp.com',
             'port': PORT,
+            'index': INDEX,
         }
     else:
         PORT = 5006
@@ -29,12 +30,12 @@ def main() -> None:
 
         server_config = {
             'port': PORT,
+            'index': INDEX,
             'static_dirs': STATIC_DIRECTORIES,
         }
 
     pn.serve(
         APPS,
-        # index=INDEX,
         **server_config,
     )
 

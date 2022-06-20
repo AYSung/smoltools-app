@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta charset="utf-8">
+    <title>SmolTools</title>
+
+    <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600&Lato|Work+Sans:400,700&display=swap"
+        rel="stylesheet" type='text/css'>
+
+    <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <style>
+        *:not(:defined) {
+            visibility: hidden
+        }
+    </style>
+
+    <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <!-- <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon.png"> -->
+    <link rel="manifest" href="https://static.bokeh.org/favicon/site.webmanifest">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <script type="module" src="https://unpkg.com/@microsoft/fast-colors@5.1.0"></script>
+    <script type="module" src="https://unpkg.com/@microsoft/fast-components@1.13.0"></script>
+    <script type="text/javascript">
+        function setParamsFromSearch(text) {
+            const params = new URLSearchParams(location.search);
+            if (text === "") {
+                params.delete("search")
+            } else {
+                params.set('search', text);
+            }
+            window.history.replaceState({}, '', `${location.pathname}?${params}`);
+        }
+        function hideCards(text) {
+            text = text.toLowerCase();
+            const cards = document.getElementsByTagName("li")
+            for (const card of cards) {
+                if (text === "" || card.innerHTML.toLowerCase().includes(text)) {
+                    card.style.display = ""
+                } else { card.style.display = "none" }
+            }
+
+            setParamsFromSearch(text)
+        }
+        function setSearchFromParams() {
+            const params = new URLSearchParams(window.location.search)
+            if (params.has('search')) {
+                const search = params.get('search')
+                const searchEl = document.getElementById("search-input")
+                searchEl.value = search
+                hideCards(search)
+            }
+        }
+    </script>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        html,
+        #body-design-provider {
+            min-height: 100vh;
+        }
+
+        body {
+            margin: 0px;
+            padding: 0;
+            font-style: normal;
+            font-variant-ligatures: normal;
+            font-variant-caps: normal;
+            font-variant-numeric: normal;
+            font-variant-east-asian: normal;
+            font-weight: normal;
+            font-stretch: normal;
+            font-size: 16px;
+            line-height: normal;
+            font-family: aktiv-grotesk, "Segoe UI", Arial, Helvetica, sans-serif;
+            overflow-y: scroll;
+        }
+
+        .gallery-item:hover {
+            box-shadow: 0 1px 5px var(--neutral-focus);
+        }
+
+        .gallery-item {
+            cursor: pointer;
+        }
+
+        .header {
+            /* background-image: url('assets/banner.png'); */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: top left;
+            border-bottom: 1px ridge;
+            background-color: rgb(5, 5, 36);
+        }
+
+        .header-grid {
+            /* Grid styles */
+            padding: 2rem 4rem;
+            display: grid;
+            align-items: center;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+        }
+
+        .header article {
+            margin-right: 1.0em;
+            padding-left: 1.0em;
+            padding-right: 1.0em;
+            opacity: 0.8;
+        }
+
+        #title,
+        #divider,
+        #subtitle {
+            background: transparent;
+            font-size: 1.5em;
+            color: white;
+        }
+
+        #search-input {
+            margin-top: 1em;
+            margin-left: 2em;
+            margin-bottom: 0em;
+            width: calc(100% - 4em);
+        }
+
+        /* The grid layout is inspired by
+  https://css-tricks.com/look-ma-no-media-queries-responsive-layouts-using-css-grid/
+  https://codepen.io/andybelldesign/pen/vMMYKJ */
+        /*
+    AUTO GRID
+    Set the minimum item size with `--cards-grid-min-size` and you'll
+    get a fully responsive grid with no media queries.
+  */
+        .cards-grid {
+            --cards-grid-min-size: 16rem;
+
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(var(--cards-grid-min-size), 1fr));
+            grid-gap: 2rem;
+            list-style: none;
+        }
+
+        /* Presentational styles */
+        .card {
+            padding: 0px;
+        }
+
+        .cards-grid {
+            margin: 2rem;
+            padding: 0px;
+        }
+
+        .avatar {
+            vertical-align: middle;
+            float: right;
+            width: 30px;
+            height: 30px;
+            margin-top: 5px;
+            border-radius: 50%;
+        }
+
+        .card-action svg {
+            vertical-align: middle;
+            float: right;
+            height: 20px;
+            color: white;
+            margin-top: 10px;
+            margin-right: 10px;
+            fill: var(--neutral-foreground-rest);
+        }
+
+        .card-image {
+            height: 100px;
+            width: 100%;
+            margin-top: 25px;
+        }
+
+        .card-content {
+            padding: 10px 10px 10px;
+            color: var(--neutral-foreground-rest);
+        }
+
+        .card-text {
+            height: 100px;
+        }
+
+        .card-header {
+            height: 2em;
+            text-align: center;
+        }
+
+        footer {
+            padding-bottom: .50rem;
+            text-align: center;
+            font-size: .75rem;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+        }
+
+        #panel-logo {
+            height: 40px;
+        }
+
+        .card-link {
+            text-decoration: none;
+            color: var(--neutral-foreground-rest);
+        }
+    </style>
+</head>
+
+<body>
+    <fast-design-system-provider id="body-design-provider" use-defaults background-color="#ffffff">
+        <fast-design-system-provider id="header-design-provider" use-defaults background-color="#000000">
+            <section class="header">
+                <div class="header-grid">
+                    <h1 style="font-size: 3em; font-family: Lato; color:white; opacity: 1.0; text-align: center;">
+                        SmolTools
+                    </h1>
+                </div>
+            </section>
+        </fast-design-system-provider>
+        <section class="search">
+            <fast-text-field id="search-input" placeholder="search" onInput="hideCards(event.target.value)">
+            </fast-text-field>
+        </section>
+        <section id="cards">
+            <ul class="cards-grid">
+                {% for item in sorted(items, key=lambda item: item[1:].replace("_", " ").title()) %}
+                <li class="card">
+                    <a class="card-link" href=".{{ item }}" id="{{ item }}">
+                        <fast-card class="gallery-item">
+                            <svg class="card-image" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                fill="currentColor" class="bi bi-window" viewBox="0 0 16 16">
+                                <path
+                                    d="M2.5 4a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm2-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm1 .5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+                                <path
+                                    d="M2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2zm13 2v2H1V3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1zM2 14a1 1 0 0 1-1-1V6h14v7a1 1 0 0 1-1 1H2z" />
+                            </svg>
+                            <div class="card-content">
+                                <h2 class="card-header">{{ item[1:].replace("_", " ").title() }}</h2>
+                            </div>
+                        </fast-card>
+                    </a>
+                </li>
+                {% end %}
+            </ul>
+        </section>
+        <section>
+            <footer>
+                <div style="color: white; border-top: 1px ridge; padding-top: 1em; align-items: center;">
+                    <!-- <fast-divider style="padding-bottom: 0.3em;"></fast-divider> -->
+                    <fast-anchor id="title" href="https://kecklab.bmolchem.wisc.edu/" appearance="neutral"
+                        style="float: center;" target="_self">
+                        <h2 style="color:rgb(5, 5, 36)">Keck Lab</h2>
+                        <!-- <img id="panel-logo" src="assets/lab_logo.png" /> -->
+                    </fast-anchor>
+                </div>
+            </footer>
+        </section>
+    </fast-design-system-provider>
+    <script type="text/javascript">
+        setSearchFromParams()
+    </script>
+</body>
+
+</html>

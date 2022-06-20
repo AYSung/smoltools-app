@@ -19,19 +19,11 @@ class Dashboard(pn.template.BootstrapTemplate):
         )
         self.data = pd.DataFrame()
         self.main.append(
-            pn.FlexBox(pdb_loader.PDBLoader(self), justify_content='center')
+            pn.FlexBox(
+                pdb_loader.PDBLoader(self),
+                justify_content='center',
+            )
         )
-
-    def load_analyses(self) -> None:
-        self.analyses = pn.FlexBox(
-            distance.make_distance_widget(self.data),
-            noe_map.make_noe_widget(self.data),
-            scatter.make_distance_scatter_widget(self.data),
-            justify_content='center',
-        )
-
-    def show_analyses(self) -> None:
-        self.main[0][0] = self.analyses
 
     def load_pdb_files(self, chain_a, chain_b) -> None:
         distances_a = albatrosy.chain_to_distances(chain_a)
@@ -45,6 +37,16 @@ class Dashboard(pn.template.BootstrapTemplate):
             'b': distances_b,
             'delta': delta_distances,
         }
+
+    def load_analyses(self) -> None:
+        self.analyses = [
+            distance.make_distance_widget(self.data),
+            noe_map.make_noe_widget(self.data),
+            scatter.make_distance_scatter_widget(self.data),
+        ]
+
+    def show_analyses(self) -> None:
+        self.main[0].objects = self.analyses
 
 
 def app() -> pn.pane:

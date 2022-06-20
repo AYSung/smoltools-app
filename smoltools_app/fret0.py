@@ -25,16 +25,6 @@ class Dashboard(pn.template.BootstrapTemplate):
             ),
         )
 
-    def load_analyses(self) -> None:
-        self.analyses = pn.FlexBox(
-            distance.make_distance_widget(self.data),
-            e_fret.make_e_fret_widget(self.data),
-            justify_content='center',
-        )
-
-    def show_analyses(self) -> None:
-        self.main[0][0] = self.analyses
-
     def load_pdb_files(self, chain_a, chain_b) -> None:
         distances_a = fret0.chain_to_distances(chain_a)
         distances_b = fret0.chain_to_distances(chain_b)
@@ -42,6 +32,16 @@ class Dashboard(pn.template.BootstrapTemplate):
         self.data = fret0.pairwise_distance_between_conformations(
             distances_a, distances_b
         )
+
+    def load_analyses(self) -> None:
+        self.analyses = [
+            distance.make_distance_widget(self.data),
+            e_fret.make_e_fret_widget(self.data),
+            self.r0_widget,
+        ]
+
+    def show_analyses(self) -> None:
+        self.main[0].objects = self.analyses
 
 
 def app() -> pn.pane:

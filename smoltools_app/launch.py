@@ -8,7 +8,7 @@ from utils import paths
 
 
 def main() -> None:
-    INDEX = str(paths.ROOT / 'index.html')
+    INDEX = str(paths.SOURCE / 'index.html')
 
     APPS = {
         'Fret0': fret0.app,

@@ -10,8 +10,8 @@ def make_distance_table(df: pd.DataFrame) -> pnw.DataFrame:
     return pnw.DataFrame(
         value=df.loc[
             lambda x: (
-                int(x.atom_id_1.str.partition('-')[0])
-                < int(x.atom_id_2.str.partition('-')[0])
+                x.atom_id_1.str.partition('-')[0].astype(int)
+                < x.atom_id_2.str.partition('-')[0].astype(int)
             )
             & (x.delta_distance > 0)
         ],

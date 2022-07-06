@@ -6,7 +6,9 @@ import panel.widgets as pnw
 
 def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
     return pnw.DataFrame(
-        value=df.loc[lambda x: x.delta_distance >= cutoff],
+        value=df.loc[
+            lambda x: (x.atom_id_1 < x.atom_id_2) & (x.delta_distance >= cutoff)
+        ],
         titles={
             'atom_id_1': 'Res #1',
             'atom_id_2': 'Res #2',

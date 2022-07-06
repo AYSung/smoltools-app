@@ -8,7 +8,13 @@ from smoltools import albatrosy
 
 def make_distance_table(df: pd.DataFrame) -> pnw.DataFrame:
     return pnw.DataFrame(
-        value=df.loc[lambda x: x.delta_distance > 0],
+        value=df.loc[
+            lambda x: (
+                int(x.atom_id_1.str.partition('-')[0])
+                < int(x.atom_id_2.str.partition('-')[0])
+            )
+            & (x.delta_distance > 0)
+        ],
         titles={
             'atom_id_1': 'Res #1',
             'atom_id_2': 'Res #2',

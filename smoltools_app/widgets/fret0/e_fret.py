@@ -9,7 +9,7 @@ from smoltools import fret0
 def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFrame:
     e_fret_table = pnw.DataFrame(
         value=fret0.e_fret_between_conformations(df, r0).loc[
-            lambda x: x.delta_E_fret >= cutoff,
+            lambda x: (x.atom_id_1 < x.atom_id_2) & (x.delta_E_fret >= cutoff),
             [
                 'atom_id_1',
                 'atom_id_2',

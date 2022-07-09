@@ -41,6 +41,7 @@ class Dashboard(pn.template.BootstrapTemplate):
 
     def load_analyses(self) -> None:
         self.analyses = [
+            # TODO: add back relevant widgets
             # distance.make_distance_widget(self.data),
             noe_map.make_dimer_noe_widget(self.data),
             # scatter.make_distance_scatter_widget(self.data),

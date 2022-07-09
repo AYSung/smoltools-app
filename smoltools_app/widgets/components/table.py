@@ -4,10 +4,15 @@ import panel.widgets as pnw
 
 
 def data_table(
-    data: pd.DataFrame, titles=dict[str, str], formatters=dict[str, NumberFormatter]
+    data: pd.DataFrame,
+    titles=dict[str, str],
+    formatters=dict[str, NumberFormatter],
+    **params
 ) -> pnw.DataFrame:
-    formatters = {column: NumberFormatter(format=format) for column, format in formatters.items()}
-    
+    formatters = {
+        column: NumberFormatter(format=format) for column, format in formatters.items()
+    }
+
     return pnw.DataFrame(
         value=data,
         titles=titles,
@@ -16,5 +21,5 @@ def data_table(
         height=500,
         row_height=30,
         disabled=True,
+        **params,
     )
-

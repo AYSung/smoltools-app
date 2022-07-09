@@ -36,6 +36,9 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
         pn.Tabs(
             ('Intra-chain NOEs', pn.pane.Vega(intra_chain_noe_map)),
             ('Inter-chain NOEs', pn.pane.Vega(inter_chain_noe_map)),
+            ('NOE table A', make_noe_table(data['a'])),
+            ('NOE table B', make_noe_table(data['b'])),
+            ('NOE table A-B', make_noe_table(data['delta'])),
             align='center',
         ),
         title='NOE Maps',
@@ -46,10 +49,12 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
 
 def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
     return table.data_table(
-        data=df.pipe(albatrosy.plots._add_noe_bins).loc[
-            lambda x: albatrosy.lower_triangle(x) & x.noe_strength != 'none',
+        data=df.pipe(albatrosy.plots._add_noe_bins)
+        .loc[
+            lambda x: albatrosy.lower_triangle(x) & (x.noe_strength != 'none'),
             ['id_1', 'id_2', 'distance', 'noe_strength'],
-        ],
+        ]
+        .sort_values('noe_strength'),
         titles={
             'id_1': 'Atom #1',
             'id_2': 'Atom #2',
@@ -59,4 +64,5 @@ def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
         formatters={
             'distance': '0.0',
         },
+        sortable=False,
     )

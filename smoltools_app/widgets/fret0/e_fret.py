@@ -7,20 +7,14 @@ from smoltools import fret0
 
 
 def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFrame:
+    # needs to know too many implementation details?
     e_fret_table = pnw.DataFrame(
         value=fret0.e_fret_between_conformations(df, r0).loc[
-            lambda x: (x.atom_id_1 < x.atom_id_2) & (x.delta_E_fret >= cutoff),
-            [
-                'atom_id_1',
-                'atom_id_2',
-                'E_fret_a',
-                'E_fret_b',
-                'delta_E_fret',
-            ],
+            lambda x: fret0.lower_triangle(x) & (x.delta_E_fret >= cutoff)
         ],
         titles={
-            'atom_id_1': 'Res #1',
-            'atom_id_2': 'Res #2',
+            'id_1': 'Res #1',
+            'id_2': 'Res #2',
             'E_fret_a': 'E_fret in A',
             'E_fret_b': 'E_fret in B',
             'delta_E_fret': '\u0394E_fret',
@@ -32,6 +26,8 @@ def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFra
         },
         show_index=False,
         height=500,
+        row_height=30,
+        disabled=True,
     )
 
     return e_fret_table

@@ -29,7 +29,7 @@ class Dashboard(pn.template.BootstrapTemplate):
         distances_a = fret0.chain_to_distances(chain_a)
         distances_b = fret0.chain_to_distances(chain_b)
 
-        self.data = fret0.pairwise_distance_between_conformations(
+        self.data = fret0.pairwise_distances_between_conformations(
             distances_a, distances_b
         )
 

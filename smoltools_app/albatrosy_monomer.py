@@ -12,7 +12,7 @@ class Dashboard(pn.template.BootstrapTemplate):
     def __init__(self, **params):
         super().__init__(
             site='SmolTools',
-            title='AlbaTROSY',
+            title='AlbaTROSY monomer',
             header_background=colors.LIGHT_BLUE,
             **params,
             # TODO: logo and favicon
@@ -26,9 +26,13 @@ class Dashboard(pn.template.BootstrapTemplate):
         )
 
     def load_pdb_files(self, chain_a, chain_b) -> None:
-        distances_a = albatrosy.chain_to_distances(chain_a)
-        distances_b = albatrosy.chain_to_distances(chain_b)
-        delta_distances = albatrosy.pairwise_distance_between_conformations(
+        distances_a = albatrosy.coordinates_from_chain(chain_a).pipe(
+            albatrosy.pairwise_distances
+        )
+        distances_b = albatrosy.coordinates_from_chain(chain_b).pipe(
+            albatrosy.pairwise_distances
+        )
+        delta_distances = albatrosy.pairwise_distances_between_conformations(
             distances_a, distances_b
         )
 

@@ -2,19 +2,14 @@ from bokeh.models.widgets.tables import NumberFormatter
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
-
 from smoltools import albatrosy
+
+from widgets.components import table
 
 
 def make_distance_table(df: pd.DataFrame) -> pnw.DataFrame:
-    return pnw.DataFrame(
-        value=df.loc[
-            lambda x: (
-                x.atom_id_1.str.partition('-')[0].astype(int)
-                < x.atom_id_2.str.partition('-')[0].astype(int)
-            )
-            & (x.delta_distance > 0)
-        ],
+    return table.data_table(
+        data=df.loc[lambda x: albatrosy.lower_triangle(x) & (x.delta_distance > 0)],
         titles={
             'atom_id_1': 'Res #1',
             'atom_id_2': 'Res #2',
@@ -27,9 +22,6 @@ def make_distance_table(df: pd.DataFrame) -> pnw.DataFrame:
             'distance_b': NumberFormatter(format='0.0'),
             'delta_distance': NumberFormatter(format='0.0'),
         },
-        show_index=False,
-        height=650,
-        disabled=True,
     )
 
 

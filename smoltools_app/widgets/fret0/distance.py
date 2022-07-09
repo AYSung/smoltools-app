@@ -4,12 +4,13 @@ import panel as pn
 import panel.widgets as pnw
 
 from smoltools import fret0
+from widgets.components import table
 
 
 def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
     # needs to know too many implementation details?
-    return pnw.DataFrame(
-        value=df.loc[lambda x: fret0.lower_triangle(x) & (x.delta_distance >= cutoff)],
+    return table.data_table(
+        data=df.loc[lambda x: fret0.lower_triangle(x) & (x.delta_distance >= cutoff)],
         titles={
             'id_1': 'Res #1',
             'id_2': 'Res #2',
@@ -22,10 +23,6 @@ def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
             'distance_b': NumberFormatter(format='0.0'),
             'delta_distance': NumberFormatter(format='0.0'),
         },
-        show_index=False,
-        height=500,
-        row_height=30,
-        disabled=True,
     )
 
 

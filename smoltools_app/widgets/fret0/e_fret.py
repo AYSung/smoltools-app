@@ -4,12 +4,13 @@ import panel as pn
 import panel.widgets as pnw
 
 from smoltools import fret0
+from widgets.components import table
 
 
 def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFrame:
     # needs to know too many implementation details?
-    e_fret_table = pnw.DataFrame(
-        value=fret0.e_fret_between_conformations(df, r0).loc[
+    e_fret_table = table.data_table(
+        data=fret0.e_fret_between_conformations(df, r0).loc[
             lambda x: fret0.lower_triangle(x) & (x.delta_E_fret >= cutoff)
         ],
         titles={
@@ -24,10 +25,6 @@ def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFra
             'E_fret_b': NumberFormatter(format='0.00'),
             'delta_E_fret': NumberFormatter(format='0.00'),
         },
-        show_index=False,
-        height=500,
-        row_height=30,
-        disabled=True,
     )
 
     return e_fret_table

@@ -10,7 +10,7 @@ from Bio.PDB.Structure import Structure
 from Bio.PDB.Chain import Chain
 
 from smoltools.pdbtools import load, select
-from smoltools.pdbtools.exceptions import ChainNotFound
+from smoltools.pdbtools.exceptions import ChainNotFound, NoResiduesFound, NoAtomsFound
 
 
 class NoFileSelected(Exception):
@@ -106,10 +106,9 @@ class PDBLoader(Viewer):
 
             self._dashboard.load_pdb_files(chain_a, chain_b)
             self._dashboard.load_analyses()
-        except (NoFileSelected, ChainNotFound) as e:
+        except (NoFileSelected, ChainNotFound, NoResiduesFound, NoAtomsFound) as e:
             self._button.button_type = 'warning'
             self._status.value = f'Error: {e.args[0]}'
-            # TODO: error handling for empty residue list?
         else:
             self._status.value = 'Success!'
             self._button.button_type = 'success'

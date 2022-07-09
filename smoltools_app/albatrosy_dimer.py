@@ -12,7 +12,7 @@ class Dashboard(pn.template.BootstrapTemplate):
     def __init__(self, **params):
         super().__init__(
             site='SmolTools',
-            title='AlbaTROSY monomer',
+            title='AlbaTROSY dimer',
             header_background=colors.LIGHT_BLUE,
             **params,
             # TODO: logo and favicon
@@ -26,15 +26,12 @@ class Dashboard(pn.template.BootstrapTemplate):
         )
 
     def load_pdb_files(self, chain_a, chain_b) -> None:
-        distances_a = albatrosy.coordinates_from_chain(chain_a).pipe(
-            albatrosy.pairwise_distances
-        )
-        distances_b = albatrosy.coordinates_from_chain(chain_b).pipe(
-            albatrosy.pairwise_distances
-        )
-        delta_distances = albatrosy.pairwise_distances_between_conformations(
-            distances_a, distances_b
-        )
+        coords_a = albatrosy.coordinates_from_chain(chain_a)
+        coords_b = albatrosy.coordinates_from_chain(chain_b)
+
+        distances_a = albatrosy.pairwise_distances(coords_a)
+        distances_b = albatrosy.pairwise_distances(coords_b)
+        delta_distances = albatrosy.pairwise_distances(coords_a, coords_b)
 
         self.data = {
             'a': distances_a,
@@ -44,9 +41,9 @@ class Dashboard(pn.template.BootstrapTemplate):
 
     def load_analyses(self) -> None:
         self.analyses = [
-            distance.make_distance_widget(self.data),
-            noe_map.make_monomer_noe_widget(self.data),
-            scatter.make_distance_scatter_widget(self.data),
+            # distance.make_distance_widget(self.data),
+            noe_map.make_dimer_noe_widget(self.data),
+            # scatter.make_distance_scatter_widget(self.data),
         ]
 
     def show_analyses(self) -> None:

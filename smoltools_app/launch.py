@@ -4,6 +4,7 @@ import panel as pn
 
 import fret0
 import albatrosy_monomer
+import albatrosy_dimer
 from utils import paths
 
 
@@ -13,6 +14,7 @@ def main() -> None:
     APPS = {
         'Fret0': fret0.app,
         'AlbaTROSY_monomer': albatrosy_monomer.app,
+        'AlbaTROSY_dimer': albatrosy_dimer.app,
     }
 
     ON_HEROKU = os.environ.get('ON_HEROKU')

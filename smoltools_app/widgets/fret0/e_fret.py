@@ -1,4 +1,3 @@
-from bokeh.models.widgets.tables import NumberFormatter
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
@@ -21,9 +20,9 @@ def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFra
             'delta_E_fret': '\u0394E_fret',
         },
         formatters={
-            'E_fret_a': NumberFormatter(format='0.00'),
-            'E_fret_b': NumberFormatter(format='0.00'),
-            'delta_E_fret': NumberFormatter(format='0.00'),
+            'E_fret_a': '0.00',
+            'E_fret_b': '0.00',
+            'delta_E_fret': '0.00',
         },
     )
 

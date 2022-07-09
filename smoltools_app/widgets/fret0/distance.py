@@ -1,4 +1,3 @@
-from bokeh.models.widgets.tables import NumberFormatter
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
@@ -19,9 +18,9 @@ def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
             'delta_distance': '\u0394Distance (\u212B)',
         },
         formatters={
-            'distance_a': NumberFormatter(format='0.0'),
-            'distance_b': NumberFormatter(format='0.0'),
-            'delta_distance': NumberFormatter(format='0.0'),
+            'distance_a': '0.0',
+            'distance_b': '0.0',
+            'delta_distance': '0.0',
         },
     )
 

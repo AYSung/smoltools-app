@@ -7,7 +7,7 @@ from widgets.components import table
 
 
 def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
-    return table.data_table(
+    distance_table = table.data_table(
         data=df.loc[lambda x: fret0.lower_triangle(x) & (x.delta_distance >= cutoff)],
         titles={
             'id_1': 'Res #1',
@@ -21,12 +21,14 @@ def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
             'distance_b': '0.0',
             'delta_distance': '0.0',
         },
+        height=620,
     )
+
+    return distance_table
 
 
 def make_distance_heatmap(df: pd.DataFrame, cutoff: float) -> pn.pane.Vega:
-    data = df.loc[lambda x: fret0.lower_triangle(x)]
-    heatmap = fret0.plots.delta_distance_map(data, cutoff=cutoff)
+    heatmap = fret0.plots.delta_distance_map(df, cutoff=cutoff)
     return pn.pane.Vega(heatmap)
 
 
@@ -40,10 +42,19 @@ def make_distance_widget(df: pd.DataFrame, cutoff: float = 20):
         make_distance_heatmap, df=df, cutoff=delta_distance_input
     )
 
+    controls = pn.Row(delta_distance_input, align='center')
+    table = pn.FlexBox(distance_table, min_width=720, justify_content='center')
+    heatmap = pn.FlexBox(distance_heatmap, min_width=720, justify_content='center')
+
+    # BUG: widgets shift around after first change to parameters
     return pn.Card(
-        delta_distance_input,
-        pn.Tabs(('Table', distance_table), ('Heatmap', distance_heatmap)),
-        width=622,
+        controls,
+        pn.Tabs(
+            ('Table', table),
+            ('Heatmap', heatmap),
+        ),
+        width=740,
+        height=800,
         title='Pairwise Distances',
         collapsible=False,
     )

@@ -7,6 +7,8 @@ def data_table(
     data: pd.DataFrame,
     titles=dict[str, str],
     formatters=dict[str, NumberFormatter],
+    height: int = 500,
+    width: int = 600,
     **params
 ) -> pnw.DataFrame:
     formatters = {
@@ -18,7 +20,8 @@ def data_table(
         titles=titles,
         formatters=formatters,
         show_index=False,
-        height=500,
+        width=width,
+        height=height,
         row_height=30,
         disabled=True,
         **params,

@@ -26,12 +26,12 @@ def r0_pair_table() -> pnw.DataFrame:
     return fret_pair_table
 
 
+# BUG: Selection triggering errors in console
 def make_chart(distance_a, distance_b) -> pn.pane.Vega:
     chart = fret0.plots.r0_curves(distance_a, distance_b)
 
     return pn.pane.Vega(
         chart,
-        # show_actions=True,
     )
 
 

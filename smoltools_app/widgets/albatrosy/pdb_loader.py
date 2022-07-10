@@ -11,7 +11,7 @@ class PDBLoader(PDBLoader):
         super().__init__(upload_function=upload_function, **params)
         labelling_schemes = smoltools.albatrosy.LABELLING_SCHEMES
         self._labelling_scheme = pnw.Select(
-            name='Methyl labelling scheme',
+            name='Methyl labeling scheme',
             options=labelling_schemes,
             value=labelling_schemes[0],
         )

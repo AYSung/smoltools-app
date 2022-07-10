@@ -7,7 +7,6 @@ from widgets.components import table
 
 
 def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
-    # needs to know too many implementation details?
     return table.data_table(
         data=df.loc[lambda x: fret0.lower_triangle(x) & (x.delta_distance >= cutoff)],
         titles={
@@ -25,17 +24,25 @@ def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
     )
 
 
+def make_distance_heatmap(df: pd.DataFrame, cutoff: float) -> pn.pane.Vega:
+    data = df.loc[lambda x: fret0.lower_triangle(x)]
+    heatmap = fret0.plots.delta_distance_map(data, cutoff=cutoff)
+    return pn.pane.Vega(heatmap)
+
+
 def make_distance_widget(df: pd.DataFrame, cutoff: float = 20):
     delta_distance_input = pnw.FloatInput(
         name='\u0394Distance cutoff (\u212B)', value=cutoff
     )
-    # sasa_input = pnw.FloatSlider(name='SASA cutoff', start=0, end=1.0)
 
     distance_table = pn.bind(make_distance_table, df=df, cutoff=delta_distance_input)
+    distance_heatmap = pn.bind(
+        make_distance_heatmap, df=df, cutoff=delta_distance_input
+    )
 
     return pn.Card(
         delta_distance_input,
-        pn.Tabs(('Table', distance_table)),
+        pn.Tabs(('Table', distance_table), ('Heatmap', distance_heatmap)),
         width=622,
         title='Pairwise Distances',
         collapsible=False,

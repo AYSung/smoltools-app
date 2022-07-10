@@ -1,3 +1,3 @@
-import fret0
-import albatrosy_dimer
-import albatrosy_monomer
+from apps import fret0
+from apps import albatrosy_dimer
+from apps import albatrosy_monomer

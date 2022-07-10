@@ -17,13 +17,6 @@ class FretPDBLoader(PDBLoader):
         raise NotImplementedError
 
     def __panel__(self) -> pn.panel:
-        return pn.Card(
-            self._pdb_input_a,
-            pn.Spacer(height=10),
-            self._pdb_input_b,
-            pn.Spacer(height=10),
-            pn.Row(self._button, align='center'),
-            pn.Row(self._status, align='center'),
-            collapsible=False,
-            title='Upload Structures',
-        )
+        layout = super().__panel__()
+        # layout.insert(4, self._calculate_interchain_noes)
+        return layout

@@ -64,7 +64,5 @@ def app() -> pn.pane:
     return Dashboard().servable()
 
 
-app()
-
 # TODO: Add Altair plots
 # TODO: SASA import

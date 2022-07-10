@@ -1,3 +1,4 @@
+from Bio.PDB.Chain import Chain
 import panel as pn
 import pandas as pd
 from smoltools import albatrosy
@@ -30,25 +31,32 @@ class Dashboard(pn.template.BootstrapTemplate):
         try:
             chain_a = self.pdb_loader.chain_a
             chain_b = self.pdb_loader.chain_b
+            is_interchain = self.pdb_loader.interchain_noe
 
-            self.load_data(chain_a, chain_b)
-            self.load_analyses()
+            self.load_data(chain_a, chain_b, is_interchain)
+            if is_interchain:
+                self.load_interchain_analyses()
+            else:
+                self.load_monomer_analyses()
         except (NoFileSelected, ChainNotFound, NoResiduesFound, NoAtomsFound) as e:
             self.pdb_loader.show_error(e)
         else:
             self.pdb_loader.upload_success()
             self.show_analyses()
 
-    def load_data(self, chain_a, chain_b) -> None:
-        distances_a = albatrosy.coordinates_from_chain(chain_a).pipe(
-            albatrosy.pairwise_distances
-        )
-        distances_b = albatrosy.coordinates_from_chain(chain_b).pipe(
-            albatrosy.pairwise_distances
-        )
-        delta_distances = albatrosy.pairwise_distances_between_conformations(
-            distances_a, distances_b
-        )
+    def load_data(self, chain_a: Chain, chain_b: Chain, is_interchain: bool) -> None:
+        coords_a = albatrosy.coordinates_from_chain(chain_a)
+        coords_b = albatrosy.coordinates_from_chain(chain_b)
+
+        distances_a = albatrosy.pairwise_distances(coords_a)
+        distances_b = albatrosy.pairwise_distances(coords_b)
+
+        if is_interchain:
+            delta_distances = albatrosy.pairwise_distances(coords_a, coords_b)
+        else:
+            delta_distances = albatrosy.pairwise_distances_between_conformations(
+                distances_a, distances_b
+            )
 
         self.data = {
             'a': distances_a,
@@ -56,11 +64,16 @@ class Dashboard(pn.template.BootstrapTemplate):
             'delta': delta_distances,
         }
 
-    def load_analyses(self) -> None:
+    def load_monomer_analyses(self) -> None:
         self.analyses = [
             distance.make_distance_widget(self.data),
             noe_map.make_monomer_noe_widget(self.data),
             scatter.make_distance_scatter_widget(self.data),
+        ]
+
+    def load_interchain_analyses(self) -> None:
+        self.analyses = [
+            noe_map.make_dimer_noe_widget(self.data),
         ]
 
     def show_analyses(self) -> None:
@@ -73,6 +86,3 @@ def app() -> pn.pane:
     config.configure_plotting_libraries()
 
     return Dashboard().servable()
-
-
-app()

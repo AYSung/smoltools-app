@@ -1,11 +1,11 @@
 import panel as pn
 import pandas as pd
-
 from smoltools import albatrosy
+from smoltools.pdbtools.exceptions import ChainNotFound, NoResiduesFound, NoAtomsFound
 
 from utils import colors, config
-from widgets.components import pdb_loader
-from widgets.albatrosy import distance, noe_map, scatter
+from widgets.albatrosy import distance, noe_map, scatter, pdb_loader
+from widgets.components.pdb_input import NoFileSelected
 
 
 class Dashboard(pn.template.BootstrapTemplate):
@@ -18,14 +18,28 @@ class Dashboard(pn.template.BootstrapTemplate):
             # TODO: logo and favicon
         )
         self.data = pd.DataFrame()
+        self.pdb_loader = pdb_loader.PDBLoader(upload_function=self.upload_files)
         self.main.append(
             pn.FlexBox(
-                pdb_loader.PDBLoader(self),
+                self.pdb_loader,
                 justify_content='center',
             )
         )
 
-    def load_pdb_files(self, chain_a, chain_b) -> None:
+    def upload_files(self, event=None) -> None:
+        try:
+            chain_a = self.pdb_loader.chain_a
+            chain_b = self.pdb_loader.chain_b
+
+            self.load_data(chain_a, chain_b)
+            self.load_analyses()
+        except (NoFileSelected, ChainNotFound, NoResiduesFound, NoAtomsFound) as e:
+            self.pdb_loader.show_error(e)
+        else:
+            self.pdb_loader.upload_success()
+            self.show_analyses()
+
+    def load_data(self, chain_a, chain_b) -> None:
         distances_a = albatrosy.coordinates_from_chain(chain_a).pipe(
             albatrosy.pairwise_distances
         )

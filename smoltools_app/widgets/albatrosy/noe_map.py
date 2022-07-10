@@ -49,7 +49,7 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
 
 def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
     return table.data_table(
-        data=df.pipe(albatrosy.plots._add_noe_bins)
+        data=df.pipe(albatrosy.add_noe_bins)
         .loc[
             lambda x: albatrosy.lower_triangle(x) & (x.noe_strength != 'none'),
             ['id_1', 'id_2', 'distance', 'noe_strength'],

@@ -67,7 +67,7 @@ class PDBInputWidget(Viewer):
             raise ChainNotFound(structure_id, model, chain_id)
 
 
-class PDBLoader(Viewer):
+class PDBLoaderBase(Viewer):
     def __init__(self, upload_function: Callable[..., None], **params):
         super().__init__(**params)
         self._pdb_input_a = PDBInputWidget('Structure A')

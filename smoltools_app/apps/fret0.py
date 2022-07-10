@@ -18,7 +18,7 @@ class Dashboard(pn.template.BootstrapTemplate):
             # TODO: logo and favicon
         )
         self.data = pd.DataFrame()
-        self.pdb_loader = pdb_loader.PDBLoader(upload_function=self.upload_files)
+        self.pdb_loader = pdb_loader.FretPDBLoader(upload_function=self.upload_files)
         self.r0_widget = r0_finder.make_widget()
         self.main.append(
             pn.FlexBox(self.pdb_loader, self.r0_widget, justify_content='center'),

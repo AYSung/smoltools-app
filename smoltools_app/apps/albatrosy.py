@@ -19,7 +19,7 @@ class Dashboard(pn.template.BootstrapTemplate):
             # TODO: logo and favicon
         )
         self.data = pd.DataFrame()
-        self.pdb_loader = pdb_loader.PDBLoader(upload_function=self.upload_files)
+        self.pdb_loader = pdb_loader.NmrPDBLoader(upload_function=self.upload_files)
         self.main.append(
             pn.FlexBox(
                 self.pdb_loader,

@@ -3,10 +3,10 @@ import panel as pn
 import panel.widgets as pnw
 import smoltools
 
-from widgets.components.pdb_input import PDBLoader
+from widgets.components.pdb_input import PDBLoaderBase
 
 
-class PDBLoader(PDBLoader):
+class NmrPDBLoader(PDBLoaderBase):
     def __init__(self, upload_function: Callable[..., None], **params):
         super().__init__(upload_function=upload_function, **params)
         labelling_schemes = smoltools.albatrosy.LABELLING_SCHEMES

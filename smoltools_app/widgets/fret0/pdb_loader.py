@@ -1,10 +1,10 @@
 from typing import Callable
 import panel as pn
 
-from widgets.components.pdb_input import PDBLoader
+from widgets.components.pdb_input import PDBLoaderBase
 
 
-class FretPDBLoader(PDBLoader):
+class FretPDBLoader(PDBLoaderBase):
     def __init__(self, upload_function: Callable[..., None], **params):
         super().__init__(upload_function=upload_function, **params)
 

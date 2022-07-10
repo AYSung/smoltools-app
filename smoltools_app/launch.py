@@ -16,10 +16,11 @@ def main() -> None:
 
     ON_HEROKU = os.environ.get('ON_HEROKU')
     if ON_HEROKU:
+        APP_NAME = os.environ.get('HEROKU_APP_NAME', 'smoltools')
         PORT = int(os.environ.get('PORT'))
         server_config = {
             'address': '0.0.0.0',
-            'websocket_origin': 'smoltools.herokuapp.com',
+            'websocket_origin': f'{APP_NAME}.herokuapp.com',
             'port': PORT,
         }
     else:

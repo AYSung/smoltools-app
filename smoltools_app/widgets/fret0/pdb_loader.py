@@ -12,11 +12,11 @@ from widgets.components.pdb_input import PDBInputWidget
 class PDBLoader(Viewer):
     def __init__(self, upload_function: Callable[..., None], **params):
         super().__init__(**params)
-        self._pdb_input_a = PDBInputWidget('Conformation A')
-        self._pdb_input_b = PDBInputWidget('Conformation B')
+        self._pdb_input_a = PDBInputWidget('Structure A')
+        self._pdb_input_b = PDBInputWidget('Structure B')
 
         self._button = pnw.Button(name='Upload', button_type='primary', width=150)
-        self._button.on_click(upload_function)  # link to function in dashboard.
+        self._button.on_click(upload_function)
         self._status = pnw.StaticText()
 
         self._layout = pn.Card(

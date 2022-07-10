@@ -23,7 +23,7 @@ def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFra
             'E_fret_b': '0.00',
             'delta_E_fret': '0.00',
         },
-        height=620,
+        height=600,
     )
 
     return e_fret_table

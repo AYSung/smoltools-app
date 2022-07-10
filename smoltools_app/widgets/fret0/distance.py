@@ -21,7 +21,7 @@ def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:
             'distance_b': '0.0',
             'delta_distance': '0.0',
         },
-        height=620,
+        height=600,
     )
 
     return distance_table
@@ -32,9 +32,9 @@ def make_distance_heatmap(df: pd.DataFrame, cutoff: float) -> pn.pane.Vega:
     return pn.pane.Vega(heatmap)
 
 
-def make_distance_widget(df: pd.DataFrame, cutoff: float = 20):
+def make_distance_widget(df: pd.DataFrame):
     delta_distance_input = pnw.FloatInput(
-        name='\u0394Distance cutoff (\u212B)', value=cutoff
+        name='\u0394Distance cutoff (\u212B)', value=20
     )
 
     distance_table = pn.bind(make_distance_table, df=df, cutoff=delta_distance_input)

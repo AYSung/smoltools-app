@@ -1,10 +1,13 @@
 import pandas as pd
 import panel as pn
+import panel.widgets as pnw
 
 from smoltools import albatrosy
 
+from widgets.components import table
 
-def make_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
+
+def make_monomer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
     combined_distances = albatrosy.splice_conformation_tables(data['a'], data['b'])
 
     noe_map_a = albatrosy.plots.noe_map(data['a'])
@@ -21,4 +24,45 @@ def make_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
         title='NOE Maps',
         collapsible=False,
         width=800,
+    )
+
+
+def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
+    combined_distances = albatrosy.splice_conformation_tables(data['a'], data['b'])
+    intra_chain_noe_map = albatrosy.plots.noe_map(combined_distances)
+    inter_chain_noe_map = albatrosy.plots.noe_map(data['delta'])
+
+    return pn.Card(
+        pn.Tabs(
+            ('Intra-chain NOEs', pn.pane.Vega(intra_chain_noe_map)),
+            ('Inter-chain NOEs', pn.pane.Vega(inter_chain_noe_map)),
+            ('NOE table A', make_noe_table(data['a'])),
+            ('NOE table B', make_noe_table(data['b'])),
+            ('NOE table A-B', make_noe_table(data['delta'])),
+            align='center',
+        ),
+        title='NOE Maps',
+        collapsible=False,
+        width=800,
+    )
+
+
+def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
+    return table.data_table(
+        data=df.pipe(albatrosy.add_noe_bins)
+        .loc[
+            lambda x: albatrosy.lower_triangle(x) & (x.noe_strength != 'none'),
+            ['id_1', 'id_2', 'distance', 'noe_strength'],
+        ]
+        .sort_values('noe_strength'),
+        titles={
+            'id_1': 'Atom #1',
+            'id_2': 'Atom #2',
+            'distance': 'Distance (\u212B)',
+            'noe_strength': 'NOE',
+        },
+        formatters={
+            'distance': '0.0',
+        },
+        sortable=False,
     )

@@ -17,21 +17,8 @@ class PDBLoader(Viewer):
 
         self._button = pnw.Button(name='Upload', button_type='primary', width=150)
         self._button.on_click(upload_function)
+
         self._status = pnw.StaticText()
-
-        self._layout = pn.Card(
-            self._pdb_input_a,
-            pn.Spacer(height=10),
-            self._pdb_input_b,
-            pn.Spacer(height=10),
-            pn.Row(self._button, align='center'),
-            pn.Row(self._status, align='center'),
-            collapsible=False,
-            title='Upload Structures',
-        )
-
-    def __panel__(self) -> pn.panel:
-        return self._layout
 
     def show_error(self, error: Exception) -> None:
         self._button.button_type = 'warning'
@@ -53,3 +40,15 @@ class PDBLoader(Viewer):
     @property
     def use_sasa(self) -> bool:
         raise NotImplementedError
+
+    def __panel__(self) -> pn.panel:
+        return pn.Card(
+            self._pdb_input_a,
+            pn.Spacer(height=10),
+            self._pdb_input_b,
+            pn.Spacer(height=10),
+            pn.Row(self._button, align='center'),
+            pn.Row(self._status, align='center'),
+            collapsible=False,
+            title='Upload Structures',
+        )

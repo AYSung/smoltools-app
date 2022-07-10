@@ -4,7 +4,7 @@ import pandas as pd
 from smoltools import fret0
 
 from utils import colors, config
-from widgets import pdb_loader
+from widgets.components import pdb_loader
 from widgets.fret0 import r0_finder, distance, e_fret
 
 

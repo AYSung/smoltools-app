@@ -4,7 +4,7 @@ import pandas as pd
 from smoltools import albatrosy
 
 from utils import colors, config
-from widgets import pdb_loader
+from widgets.components import pdb_loader
 from widgets.albatrosy import distance, noe_map, scatter
 
 

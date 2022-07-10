@@ -15,9 +15,7 @@ class NmrPDBLoader(PDBLoaderBase):
             options=labelling_schemes,
             value=labelling_schemes[0],
         )
-        self._calculate_interchain_noes = pnw.Checkbox(
-            name='Calculate interchain NOEs?'
-        )
+        self._calculate_interchain_noes = pnw.Checkbox(name='Calculate interchain NOEs')
 
     @property
     def interchain_noe(self) -> bool:

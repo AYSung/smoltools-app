@@ -32,8 +32,9 @@ class Dashboard(pn.template.BootstrapTemplate):
             chain_a = self.pdb_loader.chain_a
             chain_b = self.pdb_loader.chain_b
             is_interchain = self.pdb_loader.interchain_noe
+            mode = self.pdb_loader.labelling_scheme
 
-            self.load_data(chain_a, chain_b, is_interchain)
+            self.load_data(chain_a, chain_b, mode, is_interchain)
             if is_interchain:
                 self.load_interchain_analyses()
             else:
@@ -44,9 +45,11 @@ class Dashboard(pn.template.BootstrapTemplate):
             self.pdb_loader.upload_success()
             self.show_analyses()
 
-    def load_data(self, chain_a: Chain, chain_b: Chain, is_interchain: bool) -> None:
-        coords_a = albatrosy.coordinates_from_chain(chain_a)
-        coords_b = albatrosy.coordinates_from_chain(chain_b)
+    def load_data(
+        self, chain_a: Chain, chain_b: Chain, mode: str, is_interchain: bool
+    ) -> None:
+        coords_a = albatrosy.coordinates_from_chain(chain_a, mode)
+        coords_b = albatrosy.coordinates_from_chain(chain_b, mode)
 
         distances_a = albatrosy.pairwise_distances(coords_a)
         distances_b = albatrosy.pairwise_distances(coords_b)

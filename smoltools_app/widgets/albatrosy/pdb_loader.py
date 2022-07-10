@@ -9,7 +9,7 @@ from widgets.components.pdb_input import PDBLoaderBase
 class NmrPDBLoader(PDBLoaderBase):
     def __init__(self, upload_function: Callable[..., None], **params):
         super().__init__(upload_function=upload_function, **params)
-        labelling_schemes = smoltools.albatrosy.LABELLING_SCHEMES
+        labelling_schemes = smoltools.albatrosy.LABELING_SCHEMES
         self._labelling_scheme = pnw.Select(
             name='Methyl labeling scheme',
             options=labelling_schemes,

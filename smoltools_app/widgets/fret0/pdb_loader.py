@@ -8,7 +8,7 @@ from widgets.components.pdb_input import PDBLoaderBase
 class FretPDBLoader(PDBLoaderBase):
     def __init__(self, upload_function: Callable[..., None], **params):
         super().__init__(upload_function=upload_function, **params)
-        self._use_sasa = pnw.Checkbox(name='SASA loaded as b-factor?')
+        self._use_sasa = pnw.Checkbox(name='SASA loaded as b-factor')
 
     @property
     def use_sasa(self) -> bool:

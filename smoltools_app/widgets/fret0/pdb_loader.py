@@ -1,5 +1,6 @@
 from typing import Callable
 import panel as pn
+import panel.widgets as pnw
 
 from widgets.components.pdb_input import PDBLoaderBase
 
@@ -7,16 +8,13 @@ from widgets.components.pdb_input import PDBLoaderBase
 class FretPDBLoader(PDBLoaderBase):
     def __init__(self, upload_function: Callable[..., None], **params):
         super().__init__(upload_function=upload_function, **params)
+        self._use_sasa = pnw.Checkbox(name='SASA loaded as b-factor?')
 
     @property
     def use_sasa(self) -> bool:
-        raise NotImplementedError
-
-    @property
-    def sasa_cutoff(self) -> float:
-        raise NotImplementedError
+        return self._use_sasa.value
 
     def __panel__(self) -> pn.panel:
         layout = super().__panel__()
-        # layout.insert(4, self._calculate_interchain_noes)
+        layout.insert(4, self._use_sasa)
         return layout

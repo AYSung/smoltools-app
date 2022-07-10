@@ -2,9 +2,7 @@ import os
 
 import panel as pn
 
-import fret0
-import albatrosy_monomer
-import albatrosy_dimer
+from apps import fret0, albatrosy_dimer, albatrosy_monomer
 from utils import paths
 
 

@@ -9,6 +9,15 @@ from widgets.fret0 import r0_finder, distance, e_fret, pdb_loader
 from widgets.components.pdb_input import NoFileSelected
 
 
+def load_data(chain_a: Chain, chain_b: Chain, use_sasa: bool) -> pd.DataFrame:
+    sasa_cutoff = 0.3 if use_sasa else None
+
+    distances_a = fret0.chain_to_distances(chain_a, sasa_cutoff)
+    distances_b = fret0.chain_to_distances(chain_b, sasa_cutoff)
+
+    return fret0.pairwise_distances_between_conformations(distances_a, distances_b)
+
+
 class Dashboard(pn.template.BootstrapTemplate):
     def __init__(self, **params):
         super().__init__(
@@ -18,8 +27,9 @@ class Dashboard(pn.template.BootstrapTemplate):
             **params,
             # TODO: logo and favicon
         )
-        self.data = pd.DataFrame()
-        self.pdb_loader = pdb_loader.fret_pdb_loader(upload_function=self.upload_files)
+        self.pdb_loader = pdb_loader.fret_pdb_loader()
+        self.pdb_loader.bind_button(self.upload_files)
+
         self.r0_widget = r0_finder.make_widget()
         self.main.append(
             pn.FlexBox(self.pdb_loader, self.r0_widget, justify_content='center'),
@@ -31,36 +41,23 @@ class Dashboard(pn.template.BootstrapTemplate):
             chain_b = self.pdb_loader.chain_b
             use_sasa = self.pdb_loader.use_sasa
 
-            self.load_data(chain_a, chain_b, use_sasa)
-            self.load_analyses()
+            data = load_data(chain_a, chain_b, use_sasa)
+            analyses = self.load_analyses(data)
         except (NoFileSelected, ChainNotFound, NoResiduesFound, NoAtomsFound) as e:
             self.pdb_loader.show_error(e)
         else:
             self.pdb_loader.upload_success()
-            self.show_analyses()
+            self.show_analyses(analyses)
 
-    def load_data(self, chain_a: Chain, chain_b: Chain, use_sasa: bool) -> None:
-        if use_sasa:
-            sasa_cutoff = 0.3
-        else:
-            sasa_cutoff = None
-
-        distances_a = fret0.chain_to_distances(chain_a, sasa_cutoff)
-        distances_b = fret0.chain_to_distances(chain_b, sasa_cutoff)
-
-        self.data = fret0.pairwise_distances_between_conformations(
-            distances_a, distances_b
-        )
-
-    def load_analyses(self) -> None:
-        self.analyses = [
-            distance.make_distance_widget(self.data),
-            e_fret.make_e_fret_widget(self.data),
+    def load_analyses(self, data: pd.DataFrame) -> list[pn.Card]:
+        return [
+            distance.make_distance_widget(data),
+            e_fret.make_e_fret_widget(data),
             self.r0_widget,
         ]
 
-    def show_analyses(self) -> None:
-        self.main[0].objects = self.analyses
+    def show_analyses(self, analyses: list[pn.Card]) -> None:
+        self.main[0].objects = analyses
 
 
 def app() -> pn.pane:
@@ -69,6 +66,3 @@ def app() -> pn.pane:
     config.configure_plotting_libraries()
 
     return Dashboard().servable()
-
-
-# TODO: Add Altair plots

@@ -19,15 +19,22 @@ class Dashboard(pn.template.BootstrapTemplate):
             # TODO: logo and favicon
         )
         self.data = pd.DataFrame()
-        self.pdb_loader_1 = pdb_loader.NmrPDBLoader(
+        self.pdb_loader_1 = pdb_loader.nmr_conformation_loader(
             upload_function=self.upload_conformation_files
         )
-        self.pdb_loader_2 = pdb_loader.NmrPDBLoader2(
+        self.pdb_loader_2 = pdb_loader.nmr_subunit_loader(
             upload_function=self.upload_interchain_files
         )
         self.main.append(
             pn.FlexBox(
-                pn.Row(self.pdb_loader_1, '**OR**', self.pdb_loader_2, align='center'),
+                pn.Row(
+                    self.pdb_loader_1,
+                    pn.Spacer(width=20),
+                    pn.Column('**OR**', align='center'),
+                    pn.Spacer(width=20),
+                    self.pdb_loader_2,
+                    align='center',
+                ),
                 justify_content='center',
             )
         )

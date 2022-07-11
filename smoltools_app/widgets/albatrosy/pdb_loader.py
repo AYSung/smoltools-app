@@ -1,5 +1,3 @@
-from typing import Callable
-
 import panel as pn
 import panel.widgets as pnw
 import smoltools
@@ -13,19 +11,8 @@ from widgets.components.pdb_input import (
 
 
 class NmrPDBLoader(PDBLoaderBase):
-    def __init__(
-        self,
-        input_widget: PDBInputWidget,
-        upload_function: Callable[..., None],
-        about: str,
-        **params
-    ):
-        super().__init__(
-            input_widget=input_widget,
-            upload_function=upload_function,
-            about=about,
-            **params
-        )
+    def __init__(self, input_widget: PDBInputWidget, about: str, **params):
+        super().__init__(input_widget=input_widget, about=about, **params)
 
         labeling_schemes = smoltools.albatrosy.LABELING_SCHEMES
         self._labeling_scheme = pnw.Select(
@@ -44,23 +31,15 @@ class NmrPDBLoader(PDBLoaderBase):
         return layout
 
 
-def nmr_conformation_loader(upload_function: Callable[..., None]) -> NmrPDBLoader:
+def nmr_conformation_loader() -> NmrPDBLoader:
     about = """
         Upload structures for two conformations of the same protein to estimate changes in NOEs.
         """
-    return NmrPDBLoader(
-        input_widget=ConformationInputWidget(),
-        upload_function=upload_function,
-        about=about,
-    )
+    return NmrPDBLoader(input_widget=ConformationInputWidget(), about=about)
 
 
-def nmr_subunit_loader(upload_function: Callable[..., None]) -> NmrPDBLoader:
+def nmr_subunit_loader() -> NmrPDBLoader:
     about = """
         Upload a structure of a dimer to estimate the intra- and inter-subunit pairwise NOEs.
         """
-    return NmrPDBLoader(
-        input_widget=SubunitInputWidget(),
-        upload_function=upload_function,
-        about=about,
-    )
+    return NmrPDBLoader(input_widget=SubunitInputWidget(), about=about)

@@ -160,7 +160,6 @@ class PDBLoaderBase(Viewer):
     def __init__(
         self,
         input_widget: PDBInputWidget,
-        upload_function: Callable[..., None],
         about: str,
         **params,
     ):
@@ -169,9 +168,10 @@ class PDBLoaderBase(Viewer):
         self._input_widget = input_widget
 
         self._button = pnw.Button(name='Upload', button_type='primary', width=150)
-        self._button.on_click(upload_function)
-
         self._status = pnw.StaticText()
+
+    def bind_button(self, function: Callable[..., None]) -> None:
+        self._button.on_click(function)
 
     def show_error(self, error: Exception) -> None:
         self._button.button_type = 'warning'

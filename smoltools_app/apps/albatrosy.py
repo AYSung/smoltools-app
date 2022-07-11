@@ -1,3 +1,5 @@
+from typing import Callable
+
 from Bio.PDB.Chain import Chain
 import panel as pn
 import pandas as pd
@@ -82,12 +84,12 @@ class Dashboard(pn.template.BootstrapTemplate):
             **params,
             # TODO: logo and favicon
         )
-        self.pdb_loader_1 = pdb_loader.nmr_conformation_loader(
-            upload_function=self.upload_conformation_files
-        )
-        self.pdb_loader_2 = pdb_loader.nmr_subunit_loader(
-            upload_function=self.upload_interchain_files
-        )
+        self.pdb_loader_1 = pdb_loader.nmr_conformation_loader()
+        self.pdb_loader_1.bind_button(self.upload_conformation_files)
+
+        self.pdb_loader_2 = pdb_loader.nmr_subunit_loader()
+        self.pdb_loader_2.bind_button(self.upload_interchain_files)
+
         self.main.append(
             pn.FlexBox(
                 pn.Row(
@@ -102,31 +104,32 @@ class Dashboard(pn.template.BootstrapTemplate):
             )
         )
 
-    def upload_conformation_files(self, event=None) -> None:
+    def _upload_files(
+        self, pdb_loader: pdb_loader.NmrPDBLoader, analysis_function: Callable
+    ):
         try:
-            chain_a = self.pdb_loader_1.chain_a
-            chain_b = self.pdb_loader_1.chain_b
-            mode = self.pdb_loader_1.labeling_scheme
+            chain_a = pdb_loader.chain_a
+            chain_b = pdb_loader.chain_b
+            mode = pdb_loader.labeling_scheme
 
-            analyses = run_conformation_analysis(chain_a, chain_b, mode)
+            analyses = analysis_function(chain_a, chain_b, mode)
         except (NoFileSelected, ChainNotFound, NoResiduesFound, NoAtomsFound) as e:
-            self.pdb_loader_1.show_error(e)
+            pdb_loader.show_error(e)
         else:
-            self.pdb_loader_1.upload_success()
+            pdb_loader.upload_success()
             self.show_analyses(analyses)
 
-    def upload_interchain_files(self, event=None) -> None:
-        try:
-            chain_a = self.pdb_loader_2.chain_a
-            chain_b = self.pdb_loader_2.chain_b
-            mode = self.pdb_loader_2.labeling_scheme
+    def upload_conformation_files(self, event=None) -> Callable:
+        self._upload_files(
+            pdb_loader=self.pdb_loader_1,
+            analysis_function=run_conformation_analysis,
+        )
 
-            analyses = run_interchain_analysis(chain_a, chain_b, mode)
-        except (NoFileSelected, ChainNotFound, NoResiduesFound, NoAtomsFound) as e:
-            self.pdb_loader_2.show_error(e)
-        else:
-            self.pdb_loader_2.upload_success()
-            self.show_analyses(analyses)
+    def upload_interchain_files(self, event=None) -> Callable:
+        self._upload_files(
+            pdb_loader=self.pdb_loader_2,
+            analysis_function=run_interchain_analysis,
+        )
 
     def show_analyses(self, analyses: list[pn.Card]) -> None:
         self.main[0].objects = analyses

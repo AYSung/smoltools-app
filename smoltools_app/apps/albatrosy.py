@@ -1,3 +1,5 @@
+from typing import Callable
+
 from Bio.PDB.Chain import Chain
 import panel as pn
 import pandas as pd
@@ -9,6 +11,70 @@ from widgets.albatrosy import distance, noe_map, scatter, pdb_loader
 from widgets.components.pdb_input import NoFileSelected
 
 
+def run_interchain_analysis(chain_a: Chain, chain_b: Chain, mode: str) -> list[pn.Card]:
+    data = load_interchain_data(chain_a, chain_b, mode)
+    return load_interchain_analyses(data)
+
+
+def load_interchain_data(
+    chain_a: Chain, chain_b: Chain, mode: str
+) -> dict[str, pd.DataFrame]:
+    coords_a = albatrosy.coordinates_from_chain(chain_a, mode)
+    coords_b = albatrosy.coordinates_from_chain(chain_b, mode)
+
+    distances_a = albatrosy.pairwise_distances(coords_a)
+    distances_b = albatrosy.pairwise_distances(coords_b)
+    delta_distances = albatrosy.pairwise_distances(coords_a, coords_b)
+
+    return {
+        'a': distances_a,
+        'b': distances_b,
+        'delta': delta_distances,
+    }
+
+
+def load_interchain_analyses(data: dict[str, pd.DataFrame]) -> list[pn.Card]:
+    return [
+        noe_map.make_dimer_noe_widget(data),
+    ]
+
+
+def run_conformation_analysis(
+    chain_a: Chain, chain_b: Chain, mode: str
+) -> list[pn.Card]:
+    data = load_conformation_data(chain_a, chain_b, mode)
+    return load_conformation_analyses(data)
+
+
+def load_conformation_data(
+    chain_a: Chain, chain_b: Chain, mode: str
+) -> dict[str, pd.DataFrame]:
+    distances_a = albatrosy.coordinates_from_chain(chain_a, mode).pipe(
+        albatrosy.pairwise_distances
+    )
+    distances_b = albatrosy.coordinates_from_chain(chain_b, mode).pipe(
+        albatrosy.pairwise_distances
+    )
+
+    delta_distances = albatrosy.pairwise_distances_between_conformations(
+        distances_a, distances_b
+    )
+
+    return {
+        'a': distances_a,
+        'b': distances_b,
+        'delta': delta_distances,
+    }
+
+
+def load_conformation_analyses(data: dict[str, pd.DataFrame]) -> list[pn.Card]:
+    return [
+        distance.make_distance_widget(data),
+        noe_map.make_monomer_noe_widget(data),
+        scatter.make_distance_scatter_widget(data),
+    ]
+
+
 class Dashboard(pn.template.BootstrapTemplate):
     def __init__(self, **params):
         super().__init__(
@@ -18,69 +84,55 @@ class Dashboard(pn.template.BootstrapTemplate):
             **params,
             # TODO: logo and favicon
         )
-        self.data = pd.DataFrame()
-        self.pdb_loader = pdb_loader.NmrPDBLoader(upload_function=self.upload_files)
+        self.pdb_loader_1 = pdb_loader.nmr_conformation_loader()
+        self.pdb_loader_1.bind_button(self.upload_conformation_files)
+
+        self.pdb_loader_2 = pdb_loader.nmr_subunit_loader()
+        self.pdb_loader_2.bind_button(self.upload_interchain_files)
+
         self.main.append(
             pn.FlexBox(
-                self.pdb_loader,
+                pn.Row(
+                    self.pdb_loader_1,
+                    pn.Spacer(width=20),
+                    pn.Column('**OR**', align='center'),
+                    pn.Spacer(width=20),
+                    self.pdb_loader_2,
+                    align='center',
+                ),
                 justify_content='center',
             )
         )
 
-    def upload_files(self, event=None) -> None:
+    def _upload_files(
+        self, pdb_loader: pdb_loader.NmrPDBLoader, analysis_function: Callable
+    ):
         try:
-            chain_a = self.pdb_loader.chain_a
-            chain_b = self.pdb_loader.chain_b
-            is_interchain = self.pdb_loader.interchain_noe
-            mode = self.pdb_loader.labelling_scheme
+            chain_a = pdb_loader.chain_a
+            chain_b = pdb_loader.chain_b
+            mode = pdb_loader.labeling_scheme
 
-            self.load_data(chain_a, chain_b, mode, is_interchain)
-            if is_interchain:
-                self.load_interchain_analyses()
-            else:
-                self.load_monomer_analyses()
+            analyses = analysis_function(chain_a, chain_b, mode)
         except (NoFileSelected, ChainNotFound, NoResiduesFound, NoAtomsFound) as e:
-            self.pdb_loader.show_error(e)
+            pdb_loader.show_error(e)
         else:
-            self.pdb_loader.upload_success()
-            self.show_analyses()
+            pdb_loader.upload_success()
+            self.show_analyses(analyses)
 
-    def load_data(
-        self, chain_a: Chain, chain_b: Chain, mode: str, is_interchain: bool
-    ) -> None:
-        coords_a = albatrosy.coordinates_from_chain(chain_a, mode)
-        coords_b = albatrosy.coordinates_from_chain(chain_b, mode)
+    def upload_conformation_files(self, event=None) -> Callable:
+        self._upload_files(
+            pdb_loader=self.pdb_loader_1,
+            analysis_function=run_conformation_analysis,
+        )
 
-        distances_a = albatrosy.pairwise_distances(coords_a)
-        distances_b = albatrosy.pairwise_distances(coords_b)
+    def upload_interchain_files(self, event=None) -> Callable:
+        self._upload_files(
+            pdb_loader=self.pdb_loader_2,
+            analysis_function=run_interchain_analysis,
+        )
 
-        if is_interchain:
-            delta_distances = albatrosy.pairwise_distances(coords_a, coords_b)
-        else:
-            delta_distances = albatrosy.pairwise_distances_between_conformations(
-                distances_a, distances_b
-            )
-
-        self.data = {
-            'a': distances_a,
-            'b': distances_b,
-            'delta': delta_distances,
-        }
-
-    def load_monomer_analyses(self) -> None:
-        self.analyses = [
-            distance.make_distance_widget(self.data),
-            noe_map.make_monomer_noe_widget(self.data),
-            scatter.make_distance_scatter_widget(self.data),
-        ]
-
-    def load_interchain_analyses(self) -> None:
-        self.analyses = [
-            noe_map.make_dimer_noe_widget(self.data),
-        ]
-
-    def show_analyses(self) -> None:
-        self.main[0].objects = self.analyses
+    def show_analyses(self, analyses: list[pn.Card]) -> None:
+        self.main[0].objects = analyses
 
 
 def app() -> pn.pane:

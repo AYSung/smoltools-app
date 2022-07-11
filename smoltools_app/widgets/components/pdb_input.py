@@ -7,9 +7,7 @@ from pathlib import Path
 import string
 import time
 
-from Bio.PDB.Structure import Structure
 from Bio.PDB.Chain import Chain
-
 from smoltools.pdbtools import load, select
 from smoltools.pdbtools.exceptions import ChainNotFound
 
@@ -20,63 +18,160 @@ class NoFileSelected(Exception):
         super().__init__(message)
 
 
+def pdb_file_input() -> pnw.FileInput:
+    return pnw.FileInput(accept='.pdb')
+
+
+def model_input() -> pnw.IntInput:
+    return pnw.IntInput(name='Model', value=0, start=0, step=1, width=60)
+
+
+def chain_input(default: str = 'A') -> pnw.Select:
+    return pnw.Select(
+        name='Chain',
+        options=[char for char in string.ascii_uppercase[:26]],
+        value=default,
+        width=60,
+    )
+
+
 class PDBInputWidget(Viewer):
-    def __init__(self, widget_id: str, **params):
-        self.widget_id = widget_id
+    def __panel__(self) -> pn.Column():
+        ...
+
+    def chain_a(self) -> Chain:
+        ...
+
+    def chain_b(self) -> Chain:
+        ...
+
+
+class ConformationInputWidget(PDBInputWidget):
+    def __init__(self, **params):
         super().__init__(**params)
-        self._pdb_file_input = pnw.FileInput(accept='.pdb')
-        self._model_input = pnw.IntInput(name='Model', value=0, width=60)
-        self._chain_input = pnw.Select(
-            name='Chain',
-            options=[char for char in string.ascii_uppercase[:26]],
-            value='A',
-            width=60,
-        )
-        self._layout = pn.Column(
-            f'**{self.widget_id}:**',
-            self._pdb_file_input,
+        self._pdb_file_input_a = pdb_file_input()
+        self._model_input_a = model_input()
+        self._chain_input_a = chain_input()
+
+        self._pdb_file_input_b = pdb_file_input()
+        self._model_input_b = model_input()
+        self._chain_input_b = chain_input()
+
+    def __panel__(self) -> pn.Column:
+        return pn.Column(
+            '**Conformation A:**',
+            self._pdb_file_input_a,
             pn.Row(
-                self._model_input,
-                self._chain_input,
+                self._model_input_a,
+                self._chain_input_a,
+            ),
+            pn.Spacer(height=10),
+            '**Conformation B:**',
+            self._pdb_file_input_b,
+            pn.Row(
+                self._model_input_b,
+                self._chain_input_b,
             ),
         )
 
-    def __panel__(self):
-        return self._layout
+    @property
+    def chain_a(self) -> Chain:
+        return load_pdb_file(
+            widget_id='Conformation A',
+            filename=self._pdb_file_input_a.filename,
+            byte_file=self._pdb_file_input_a.value,
+            model=self._model_input_a.value,
+            chain=self._chain_input_a.value,
+        )
 
     @property
-    def pdb_structure(self) -> Structure:
-        try:
-            return load.read_pdb_from_bytes(
-                self._pdb_file_input.filename, self._pdb_file_input.value
-            )
-        except AttributeError:
-            raise NoFileSelected(self.widget_id)
+    def chain_b(self) -> Chain:
+        return load_pdb_file(
+            widget_id='Conformation B',
+            filename=self._pdb_file_input_b.filename,
+            byte_file=self._pdb_file_input_b.value,
+            model=self._model_input_b.value,
+            chain=self._chain_input_b.value,
+        )
+
+
+class SubunitInputWidget(PDBInputWidget):
+    def __init__(self, **params):
+        super().__init__(**params)
+        self._pdb_file_input = pdb_file_input()
+        self._model_input_a = model_input()
+        self._chain_input_a = chain_input(default='A')
+
+        self._model_input_b = model_input()
+        self._chain_input_b = chain_input(default='B')
+
+    def __panel__(self) -> pn.Column:
+        return pn.Column(
+            '**Structure:**',
+            self._pdb_file_input,
+            pn.Spacer(height=10),
+            pn.Row(
+                'Subunit 1:',
+                self._model_input_a,
+                self._chain_input_a,
+            ),
+            pn.Row(
+                'Subunit 2:',
+                self._model_input_b,
+                self._chain_input_b,
+            ),
+        )
 
     @property
-    def chain(self) -> Chain:
-        structure = self.pdb_structure
+    def chain_a(self) -> Chain:
+        return load_pdb_file(
+            widget_id='the structure',
+            filename=self._pdb_file_input.filename,
+            byte_file=self._pdb_file_input.value,
+            model=self._model_input_a.value,
+            chain=self._chain_input_a.value,
+        )
 
-        model = self._model_input.value
-        chain_id = self._chain_input.value
+    @property
+    def chain_b(self) -> Chain:
+        return load_pdb_file(
+            widget_id='the structure',
+            filename=self._pdb_file_input.filename,
+            byte_file=self._pdb_file_input.value,
+            model=self._model_input_b.value,
+            chain=self._chain_input_b.value,
+        )
 
-        try:
-            return select.get_chain(structure, model, chain_id)
-        except KeyError:
-            structure_id = Path(self._pdb_file_input.filename).stem
-            raise ChainNotFound(structure_id, model, chain_id)
+
+def load_pdb_file(
+    widget_id: str, filename: str, byte_file: bytes, model: int, chain: str
+) -> Chain:
+    try:
+        structure = load.read_pdb_from_bytes(filename, byte_file)
+        return select.get_chain(structure, model, chain)
+    except AttributeError:
+        raise NoFileSelected(widget_id)
+    except KeyError:
+        structure_id = Path(filename).stem
+        raise ChainNotFound(structure_id, model, chain)
 
 
 class PDBLoaderBase(Viewer):
-    def __init__(self, upload_function: Callable[..., None], **params):
+    def __init__(
+        self,
+        input_widget: PDBInputWidget,
+        about: str,
+        **params,
+    ):
         super().__init__(**params)
-        self._pdb_input_a = PDBInputWidget('Structure A')
-        self._pdb_input_b = PDBInputWidget('Structure B')
+        self._about = about
+        self._input_widget = input_widget
 
         self._button = pnw.Button(name='Upload', button_type='primary', width=150)
-        self._button.on_click(upload_function)
-
         self._status = pnw.StaticText()
+
+    def bind_button(self, function: Callable[..., None]) -> None:
+        self._button.on_click(function)
 
     def show_error(self, error: Exception) -> None:
         self._button.button_type = 'warning'
@@ -89,18 +184,16 @@ class PDBLoaderBase(Viewer):
 
     @property
     def chain_a(self) -> Chain:
-        return self._pdb_input_a.chain
+        return self._input_widget.chain_a
 
     @property
     def chain_b(self) -> Chain:
-        return self._pdb_input_b.chain
+        return self._input_widget.chain_b
 
     def __panel__(self) -> pn.panel:
         return pn.Card(
-            self._pdb_input_a,
-            pn.Spacer(height=10),
-            self._pdb_input_b,
-            pn.Spacer(height=10),
+            self._about,
+            self._input_widget,
             pn.Row(self._button, align='center'),
             pn.Row(self._status, align='center'),
             collapsible=False,

@@ -1,32 +1,45 @@
-from typing import Callable
 import panel as pn
 import panel.widgets as pnw
 import smoltools
 
-from widgets.components.pdb_input import PDBLoaderBase
+from widgets.components.pdb_input import (
+    PDBInputWidget,
+    PDBLoaderBase,
+    ConformationInputWidget,
+    SubunitInputWidget,
+)
 
 
 class NmrPDBLoader(PDBLoaderBase):
-    def __init__(self, upload_function: Callable[..., None], **params):
-        super().__init__(upload_function=upload_function, **params)
-        labelling_schemes = smoltools.albatrosy.LABELLING_SCHEMES
-        self._labelling_scheme = pnw.Select(
+    def __init__(self, input_widget: PDBInputWidget, about: str, **params):
+        super().__init__(input_widget=input_widget, about=about, **params)
+
+        labeling_schemes = smoltools.albatrosy.LABELING_SCHEMES
+        self._labeling_scheme = pnw.Select(
             name='Methyl labeling scheme',
-            options=labelling_schemes,
-            value=labelling_schemes[0],
+            options=labeling_schemes,
+            value=labeling_schemes[0],
         )
-        self._calculate_interchain_noes = pnw.Checkbox(name='Calculate interchain NOEs')
 
     @property
-    def interchain_noe(self) -> bool:
-        return self._calculate_interchain_noes.value
-
-    @property
-    def labelling_scheme(self) -> str:
-        return self._labelling_scheme.value
+    def labeling_scheme(self) -> str:
+        return self._labeling_scheme.value
 
     def __panel__(self) -> pn.panel:
         layout = super().__panel__()
-        layout.insert(4, self._labelling_scheme)
-        layout.insert(5, self._calculate_interchain_noes)
+        layout.insert(2, self._labeling_scheme)
         return layout
+
+
+def nmr_conformation_loader() -> NmrPDBLoader:
+    about = """
+        Upload structures for two conformations of the same protein to estimate changes in NOEs.
+        """
+    return NmrPDBLoader(input_widget=ConformationInputWidget(), about=about)
+
+
+def nmr_subunit_loader() -> NmrPDBLoader:
+    about = """
+        Upload a structure of a dimer to estimate the intra- and inter-subunit pairwise NOEs.
+        """
+    return NmrPDBLoader(input_widget=SubunitInputWidget(), about=about)

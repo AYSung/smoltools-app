@@ -1,4 +1,5 @@
 from typing import Callable
+
 import panel as pn
 import panel.widgets as pnw
 import smoltools

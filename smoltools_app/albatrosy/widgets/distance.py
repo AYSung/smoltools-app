@@ -31,9 +31,6 @@ def make_distance_widget(data: dict[str, pd.DataFrame]):
     distance_map_a = pn.pane.Vega(albatrosy.plots.distance_map(data['a']))
     distance_map_b = pn.pane.Vega(albatrosy.plots.distance_map(data['b']))
     delta_distance_map = pn.pane.Vega(albatrosy.plots.delta_distance_map(data['delta']))
-    binned_distance_map = pn.pane.Vega(
-        albatrosy.plots.binned_distance_map(data['a'], bin_size=20)
-    )
 
     return pn.Card(
         pn.Tabs(
@@ -41,7 +38,6 @@ def make_distance_widget(data: dict[str, pd.DataFrame]):
             ('Conformation A', centered_row(distance_map_a)),
             ('Conformation B', centered_row(distance_map_b)),
             ('Table', centered_row(distance_table)),
-            ('Binned (beta)', centered_row(binned_distance_map)),
             align='center',
         ),
         title='Pairwise Distances',

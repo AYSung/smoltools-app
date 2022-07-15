@@ -59,14 +59,14 @@ class ConformationInputWidget(PDBInputWidget):
 
     def __panel__(self) -> pn.Column:
         return pn.Column(
-            '**Conformation A:**',
+            pn.Row('**Conformation A:**', height=30),
             self._pdb_file_input_a,
             pn.Row(
                 self._model_input_a,
                 self._chain_input_a,
             ),
             pn.Spacer(height=10),
-            '**Conformation B:**',
+            pn.Row('**Conformation B:**', height=30),
             self._pdb_file_input_b,
             pn.Row(
                 self._model_input_b,
@@ -107,7 +107,7 @@ class SubunitInputWidget(PDBInputWidget):
 
     def __panel__(self) -> pn.Column:
         return pn.Column(
-            '**Structure:**',
+            pn.Row('**Structure:**', height=30),
             self._pdb_file_input,
             pn.Spacer(height=10),
             pn.Row(

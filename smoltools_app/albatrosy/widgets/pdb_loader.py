@@ -22,7 +22,6 @@ class NmrPDBLoader(PDBLoaderBase):
     def __panel__(self) -> pn.panel:
         layout = super().__panel__()
         layout.insert(2, self._labeling_scheme)
-        layout.insert(2, '**Labeled Atoms**')
         return layout
 
 
@@ -43,27 +42,22 @@ def nmr_subunit_loader() -> NmrPDBLoader:
 class LabeledAtomSelector(Viewer):
     def __init__(self, **params):
         super().__init__(**params)
-        self._ile = pnw.CheckBoxGroup(
-            options=['CG2', 'CD'], inline=True, value=['CG2'], align='end'
-        )
-        self._leu = pnw.CheckBoxGroup(
-            options=['CD1', 'CD2'], inline=True, value=['CD1', 'CD2'], align='end'
-        )
-        self._val = pnw.CheckBoxGroup(
-            options=['CG1', 'CG2'], inline=True, value=['CG1', 'CG2'], align='end'
-        )
-        self._ala = pnw.CheckBoxGroup(options=['CB'], inline=True, align='end')
-        self._met = pnw.CheckBoxGroup(options=['CE'], inline=True, align='end')
-        self._thr = pnw.CheckBoxGroup(options=['CG2'], inline=True, align='end')
+        self._ile = atom_checkbox(options=['CD', 'CG2'], default=['CD'])
+        self._leu = atom_checkbox(options=['CD1', 'CD2'], default=['CD1', 'CD2'])
+        self._val = atom_checkbox(options=['CG1', 'CG2'], default=['CG1', 'CG2'])
+        self._ala = atom_checkbox(options=['CB'])
+        self._met = atom_checkbox(options=['CE'])
+        self._thr = atom_checkbox(options=['CG2'])
 
     def __panel__(self):
         return pn.Column(
-            pn.Row('**Ile:**', pn.Spacer(), self._ile),
-            pn.Row('**Leu:**', pn.Spacer(), self._leu),
-            pn.Row('**Val:**', pn.Spacer(), self._val),
-            pn.Row('**Ala:**', pn.Spacer(), self._ala),
-            pn.Row('**Met:**', pn.Spacer(), self._met),
-            pn.Row('**Thr:**', pn.Spacer(), self._thr),
+            pn.Row('**Labeled atoms:**', height=30),
+            pn.Row('Ile:', self._ile, height=25),
+            pn.Row('Leu:', self._leu, height=25),
+            pn.Row('Val:', self._val, height=25),
+            pn.Row('Ala:', self._ala, height=25),
+            pn.Row('Met:', self._met, height=25),
+            pn.Row('Thr:', self._thr, height=25),
         )
 
     @property
@@ -77,3 +71,16 @@ class LabeledAtomSelector(Viewer):
             'THR': self._thr.value,
         }
         return {key: value for key, value in values.items() if value}
+
+
+def atom_checkbox(options: list[str], default: list[str] = None):
+    if default is None:
+        default = []
+
+    return pnw.CheckBoxGroup(
+        options=options,
+        inline=True,
+        value=default,
+        align='start',
+        margin=(7, 0, 0, 5),
+    )

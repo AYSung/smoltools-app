@@ -62,8 +62,12 @@ class LabeledAtomSelector(Viewer):
 
     @property
     def value(self):
+        ile_atoms = (
+            self._ile.value + ['CD1'] if 'CD' in self._ile.value else self._ile.value
+        )
+
         values = {
-            'ILE': self._ile.value,
+            'ILE': ile_atoms,
             'LEU': self._leu.value,
             'VAL': self._val.value,
             'ALA': self._ala.value,

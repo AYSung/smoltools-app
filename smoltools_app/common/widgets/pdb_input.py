@@ -147,7 +147,7 @@ def load_pdb_file(
     widget_id: str, filename: str, byte_file: bytes, model: int, chain: str
 ) -> Chain:
     try:
-        structure = load.read_pdb_from_bytes(filename, byte_file)
+        structure = load.read_pdb_from_bytes(Path(filename).stem, byte_file)
         return select.get_chain(structure, model, chain)
     except AttributeError:
         raise NoFileSelected(widget_id)

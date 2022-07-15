@@ -30,7 +30,9 @@ def make_monomer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
 def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
     combined_distances = albatrosy.splice_conformation_tables(data['a'], data['b'])
     intra_chain_noe_map = albatrosy.plots.noe_map(combined_distances)
-    inter_chain_noe_map = albatrosy.plots.noe_map(data['delta'])
+    inter_chain_noe_map = albatrosy.plots.noe_map(
+        data['delta'], data['chain_a_id'], data['chain_b_id']
+    )
 
     return pn.Card(
         pn.Tabs(

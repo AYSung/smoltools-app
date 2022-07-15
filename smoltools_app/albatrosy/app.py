@@ -75,6 +75,8 @@ def load_conformation_data(
         'a': distances_a,
         'b': distances_b,
         'delta': delta_distances,
+        'chain_a_id': _get_chain_id(chain_a),
+        'chain_b_id': _get_chain_id(chain_b),
     }
 
 

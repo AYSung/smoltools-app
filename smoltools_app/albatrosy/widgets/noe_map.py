@@ -8,11 +8,16 @@ from common.widgets import table
 
 
 def make_monomer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
-    combined_distances = albatrosy.splice_conformation_tables(data['a'], data['b'])
+    combined_distances = albatrosy.splice_conformation_tables(
+        data['a'],
+        data['b'],
+        chain_a_id=data['chain_a_id'],
+        chain_b_id=data['chain_b_id'],
+    )
 
     noe_map_a = albatrosy.plots.noe_map(data['a'])
     noe_map_b = albatrosy.plots.noe_map(data['b'])
-    combined_noe_map = albatrosy.plots.noe_map(combined_distances)
+    combined_noe_map = albatrosy.plots.spliced_noe_map(combined_distances)
 
     return pn.Card(
         pn.Tabs(
@@ -28,10 +33,15 @@ def make_monomer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
 
 
 def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
-    combined_distances = albatrosy.splice_conformation_tables(data['a'], data['b'])
-    intra_chain_noe_map = albatrosy.plots.noe_map(combined_distances)
-    inter_chain_noe_map = albatrosy.plots.noe_map(
-        data['delta'], data['chain_a_id'], data['chain_b_id']
+    combined_distances = albatrosy.splice_conformation_tables(
+        data['a'],
+        data['b'],
+        chain_a_id=data['chain_a_id'],
+        chain_b_id=data['chain_b_id'],
+    )
+    intra_chain_noe_map = albatrosy.plots.spliced_noe_map(combined_distances)
+    inter_chain_noe_map = albatrosy.plots.interchain_noe_map(
+        data['delta'], x_title=data['chain_a_id'], y_title=data['chain_b_id']
     )
 
     return pn.Card(

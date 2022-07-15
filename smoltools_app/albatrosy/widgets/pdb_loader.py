@@ -2,7 +2,7 @@ import panel as pn
 import panel.widgets as pnw
 import smoltools
 
-from widgets.components.pdb_input import (
+from common.widgets.pdb_input import (
     PDBInputWidget,
     PDBLoaderBase,
     ConformationInputWidget,

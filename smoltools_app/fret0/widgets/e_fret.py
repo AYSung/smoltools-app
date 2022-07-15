@@ -1,9 +1,9 @@
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
-
 from smoltools import fret0
-from widgets.components import table
+
+from common.widgets import table
 
 
 def make_e_fret_table(df: pd.DataFrame, r0: float, cutoff: float) -> pnw.DataFrame:

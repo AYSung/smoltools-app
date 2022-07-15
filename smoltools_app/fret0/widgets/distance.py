@@ -3,7 +3,7 @@ import panel as pn
 import panel.widgets as pnw
 
 from smoltools import fret0
-from widgets.components import table
+from common.widgets import table
 
 
 def make_distance_table(df: pd.DataFrame, cutoff: float) -> pnw.DataFrame:

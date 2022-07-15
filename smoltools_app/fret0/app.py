@@ -5,8 +5,8 @@ from smoltools import fret0
 from smoltools.pdbtools.exceptions import ChainNotFound, NoResiduesFound, NoAtomsFound
 
 from utils import colors, config
-from widgets.fret0 import r0_finder, distance, e_fret, pdb_loader
-from widgets.components.pdb_input import NoFileSelected
+from fret0.widgets import r0_finder, distance, e_fret, pdb_loader
+from common.widgets.pdb_input import NoFileSelected
 
 
 def load_data(chain_a: Chain, chain_b: Chain, use_sasa: bool) -> pd.DataFrame:

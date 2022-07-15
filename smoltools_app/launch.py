@@ -2,7 +2,8 @@ import os
 
 import panel as pn
 
-from apps import fret0, albatrosy
+from albatrosy.app import app as albatrosy_app
+from fret0.app import app as fret0_app
 from utils import paths
 
 
@@ -10,8 +11,8 @@ def main() -> None:
     INDEX = str(paths.SOURCE / 'index.html')
 
     APPS = {
-        'Fret0': fret0.app,
-        'AlbaTROSY': albatrosy.app,
+        'Fret0': fret0_app,
+        'AlbaTROSY': albatrosy_app,
     }
 
     ON_HEROKU = os.environ.get('ON_HEROKU')

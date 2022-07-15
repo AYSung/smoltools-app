@@ -4,7 +4,7 @@ import panel.widgets as pnw
 
 from smoltools import albatrosy
 
-from widgets.components import table
+from common.widgets import table
 
 
 def make_monomer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:

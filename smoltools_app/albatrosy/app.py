@@ -7,8 +7,8 @@ from smoltools import albatrosy
 from smoltools.pdbtools.exceptions import ChainNotFound, NoResiduesFound, NoAtomsFound
 
 from utils import colors, config
-from widgets.albatrosy import distance, noe_map, scatter, pdb_loader
-from widgets.components.pdb_input import NoFileSelected
+from albatrosy.widgets import distance, noe_map, scatter, pdb_loader
+from common.widgets.pdb_input import NoFileSelected
 
 
 def run_interchain_analysis(chain_a: Chain, chain_b: Chain, mode: str) -> list[pn.Card]:

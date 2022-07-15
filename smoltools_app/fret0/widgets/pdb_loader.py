@@ -1,7 +1,7 @@
 import panel as pn
 import panel.widgets as pnw
 
-from widgets.components.pdb_input import PDBLoaderBase, ConformationInputWidget
+from common.widgets.pdb_input import PDBLoaderBase, ConformationInputWidget
 
 
 class FretPDBLoader(PDBLoaderBase):

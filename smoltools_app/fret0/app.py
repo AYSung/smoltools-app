@@ -6,7 +6,7 @@ from smoltools.pdbtools.exceptions import ChainNotFound, NoResiduesFound, NoAtom
 
 from utils import colors, config
 from fret0.widgets import r0_finder, distance, e_fret, pdb_loader
-from common.widgets.pdb_input import NoFileSelected
+from common.widgets.pdb_loader import NoFileSelected
 
 
 def load_data(chain_a: Chain, chain_b: Chain, use_sasa: bool) -> pd.DataFrame:
@@ -39,7 +39,7 @@ class Dashboard(pn.template.BootstrapTemplate):
         try:
             chain_a = self.pdb_loader.chain_a
             chain_b = self.pdb_loader.chain_b
-            use_sasa = self.pdb_loader.use_sasa
+            use_sasa = self.pdb_loader.options_value
 
             data = load_data(chain_a, chain_b, use_sasa)
             analyses = self.load_analyses(data)

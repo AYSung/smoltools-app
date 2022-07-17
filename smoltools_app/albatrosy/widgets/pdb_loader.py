@@ -2,41 +2,32 @@ import panel as pn
 import panel.widgets as pnw
 from panel.viewable import Viewer
 
-from common.widgets.pdb_input import (
+from common.widgets.pdb_loader import (
     PDBInputWidget,
-    PDBLoaderBase,
+    PDBLoader,
     ConformationInputWidget,
     SubunitInputWidget,
 )
 
 
-class NmrPDBLoader(PDBLoaderBase):
-    def __init__(self, input_widget: PDBInputWidget, about: str, **params):
-        super().__init__(input_widget=input_widget, about=about, **params)
-        self._labeling_scheme = LabeledAtomSelector()
-
-    @property
-    def labeling_scheme(self) -> str:
-        return self._labeling_scheme.value
-
-    def __panel__(self) -> pn.panel:
-        layout = super().__panel__()
-        layout.insert(2, self._labeling_scheme)
-        return layout
+def _nmr_pdb_loader(input_widget: PDBInputWidget, about: str) -> PDBLoader:
+    return PDBLoader(
+        input_widget=input_widget, options_widget=LabeledAtomSelector(), about=about
+    )
 
 
-def nmr_conformation_loader() -> NmrPDBLoader:
+def nmr_conformation_loader() -> PDBLoader:
     about = """
         Upload structures for two conformations of the same protein to estimate changes in NOEs.
         """
-    return NmrPDBLoader(input_widget=ConformationInputWidget(), about=about)
+    return _nmr_pdb_loader(input_widget=ConformationInputWidget(), about=about)
 
 
-def nmr_subunit_loader() -> NmrPDBLoader:
+def nmr_subunit_loader() -> PDBLoader:
     about = """
         Upload a structure of a dimer to estimate the intra- and inter-subunit pairwise NOEs.
         """
-    return NmrPDBLoader(input_widget=SubunitInputWidget(), about=about)
+    return _nmr_pdb_loader(input_widget=SubunitInputWidget(), about=about)
 
 
 class LabeledAtomSelector(Viewer):
@@ -52,12 +43,12 @@ class LabeledAtomSelector(Viewer):
     def __panel__(self):
         return pn.Column(
             pn.Row('**Labeled atoms:**', height=30),
-            pn.Row('Ile:', self._ile, height=25),
-            pn.Row('Leu:', self._leu, height=25),
-            pn.Row('Val:', self._val, height=25),
-            pn.Row('Ala:', self._ala, height=25),
-            pn.Row('Met:', self._met, height=25),
-            pn.Row('Thr:', self._thr, height=25),
+            checkbox_row('Ile:', self._ile),
+            checkbox_row('Leu:', self._leu),
+            checkbox_row('Val:', self._val),
+            checkbox_row('Ala:', self._ala),
+            checkbox_row('Met:', self._met),
+            checkbox_row('Thr:', self._thr),
         )
 
     @property
@@ -77,7 +68,7 @@ class LabeledAtomSelector(Viewer):
         return {key: value for key, value in values.items() if value}
 
 
-def atom_checkbox(options: list[str], default: list[str] = None):
+def atom_checkbox(options: list[str], default: list[str] = None) -> pnw.CheckBoxGroup:
     if default is None:
         default = []
 
@@ -88,3 +79,7 @@ def atom_checkbox(options: list[str], default: list[str] = None):
         align='start',
         margin=(7, 0, 0, 5),
     )
+
+
+def checkbox_row(title: str, checkbox_group: pnw.CheckBoxGroup) -> pn.Row:
+    return pn.Row(title, checkbox_group, height=25)

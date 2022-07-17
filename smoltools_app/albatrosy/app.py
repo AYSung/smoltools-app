@@ -8,7 +8,7 @@ from smoltools.pdbtools.exceptions import ChainNotFound, NoResiduesFound, NoAtom
 
 from utils import colors, config
 from albatrosy.widgets import distance, noe_map, scatter, pdb_loader
-from common.widgets.pdb_input import NoFileSelected
+from common.widgets.pdb_loader import NoFileSelected, PDBLoader
 
 
 def run_interchain_analysis(
@@ -117,13 +117,11 @@ class Dashboard(pn.template.BootstrapTemplate):
             )
         )
 
-    def _upload_files(
-        self, pdb_loader: pdb_loader.NmrPDBLoader, analysis_function: Callable
-    ):
+    def _upload_files(self, pdb_loader: PDBLoader, analysis_function: Callable):
         try:
             chain_a = pdb_loader.chain_a
             chain_b = pdb_loader.chain_b
-            mode = pdb_loader.labeling_scheme
+            mode = pdb_loader.options_value
 
             analyses = analysis_function(chain_a, chain_b, mode)
         except (NoFileSelected, ChainNotFound, NoResiduesFound, NoAtomsFound) as e:

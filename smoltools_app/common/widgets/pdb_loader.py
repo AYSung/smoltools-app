@@ -156,16 +156,27 @@ def load_pdb_file(
         raise ChainNotFound(structure_id, model, chain)
 
 
-class PDBLoaderBase(Viewer):
+class OptionsWidget(Viewer):
+    def __panel__(self):
+        ...
+
+    @property
+    def value(self):
+        ...
+
+
+class PDBLoader(Viewer):
     def __init__(
         self,
         input_widget: PDBInputWidget,
+        options_widget: OptionsWidget,
         about: str,
         **params,
     ):
         super().__init__(**params)
         self._about = about
         self._input_widget = input_widget
+        self._options_widget = options_widget
 
         self._button = pnw.Button(name='Upload', button_type='primary', width=150)
         self._status = pnw.StaticText()
@@ -190,10 +201,15 @@ class PDBLoaderBase(Viewer):
     def chain_b(self) -> Chain:
         return self._input_widget.chain_b
 
+    @property
+    def options_value(self):
+        return self._options_widget.value
+
     def __panel__(self) -> pn.panel:
         return pn.Card(
             self._about,
             self._input_widget,
+            self._options_widget,
             pn.Row(self._button, align='center'),
             pn.Row(self._status, align='center'),
             collapsible=False,

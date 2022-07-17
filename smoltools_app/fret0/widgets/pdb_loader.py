@@ -1,26 +1,15 @@
-import panel as pn
 import panel.widgets as pnw
 
-from common.widgets.pdb_input import PDBLoaderBase, ConformationInputWidget
+from common.widgets.pdb_loader import PDBLoader, ConformationInputWidget
 
 
-class FretPDBLoader(PDBLoaderBase):
-    def __init__(self, about: str, **params):
-        super().__init__(input_widget=ConformationInputWidget(), about=about, **params)
-        self._use_sasa = pnw.Checkbox(name='SASA loaded as b-factor')
-
-    @property
-    def use_sasa(self) -> bool:
-        return self._use_sasa.value
-
-    def __panel__(self) -> pn.panel:
-        layout = super().__panel__()
-        layout.insert(2, self._use_sasa)
-        return layout
-
-
-def fret_pdb_loader() -> FretPDBLoader:
+def fret_pdb_loader() -> PDBLoader:
     about = """
         Upload structures for two conformations of the same protein to estimate changes in FRET efficiency.
         """
-    return FretPDBLoader(about=about)
+    options_widget = pnw.Checkbox(name='SASA loaded as b-factor')
+    return PDBLoader(
+        input_widget=ConformationInputWidget(),
+        options_widget=options_widget,
+        about=about,
+    )

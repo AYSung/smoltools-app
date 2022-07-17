@@ -1,6 +1,6 @@
 from Bio.PDB.Chain import Chain
-import panel as pn
 import pandas as pd
+import panel as pn
 from smoltools import albatrosy
 
 from albatrosy.widgets import distance, noe_map, scatter

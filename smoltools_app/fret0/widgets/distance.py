@@ -1,8 +1,8 @@
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
-
 from smoltools import fret0
+
 from common.widgets import table
 
 

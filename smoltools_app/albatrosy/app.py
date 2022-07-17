@@ -3,10 +3,10 @@ from typing import Callable
 import panel as pn
 from smoltools.pdbtools.exceptions import ChainNotFound, NoResiduesFound, NoAtomsFound
 
-from utils import colors, config
 from albatrosy.analysis import run_interchain_analysis, run_conformation_analysis
 from albatrosy.widgets import pdb_loader
 from common.widgets.pdb_loader import NoFileSelected, PDBLoader
+from utils import colors, config
 
 
 class Dashboard(pn.template.BootstrapTemplate):

@@ -1,12 +1,12 @@
 from Bio.PDB.Chain import Chain
-import panel as pn
 import pandas as pd
+import panel as pn
 from smoltools import fret0
 from smoltools.pdbtools.exceptions import ChainNotFound, NoResiduesFound, NoAtomsFound
 
-from utils import colors, config
-from fret0.widgets import r0_finder, distance, e_fret, pdb_loader
 from common.widgets.pdb_loader import NoFileSelected
+from fret0.widgets import r0_finder, distance, e_fret, pdb_loader
+from utils import colors, config
 
 
 def load_data(chain_a: Chain, chain_b: Chain, use_sasa: bool) -> pd.DataFrame:

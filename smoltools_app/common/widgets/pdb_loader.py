@@ -1,9 +1,9 @@
+from pathlib import Path
 from typing import Callable
 
 import panel as pn
-import panel.widgets as pnw
 from panel.viewable import Viewer
-from pathlib import Path
+import panel.widgets as pnw
 import string
 import time
 

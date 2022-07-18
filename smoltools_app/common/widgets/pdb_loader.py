@@ -1,9 +1,9 @@
+from pathlib import Path
 from typing import Callable
 
 import panel as pn
-import panel.widgets as pnw
 from panel.viewable import Viewer
-from pathlib import Path
+import panel.widgets as pnw
 import string
 import time
 
@@ -59,14 +59,14 @@ class ConformationInputWidget(PDBInputWidget):
 
     def __panel__(self) -> pn.Column:
         return pn.Column(
-            '**Conformation A:**',
+            pn.Row('**Conformation A:**', height=30),
             self._pdb_file_input_a,
             pn.Row(
                 self._model_input_a,
                 self._chain_input_a,
             ),
             pn.Spacer(height=10),
-            '**Conformation B:**',
+            pn.Row('**Conformation B:**', height=30),
             self._pdb_file_input_b,
             pn.Row(
                 self._model_input_b,
@@ -107,7 +107,7 @@ class SubunitInputWidget(PDBInputWidget):
 
     def __panel__(self) -> pn.Column:
         return pn.Column(
-            '**Structure:**',
+            pn.Row('**Structure:**', height=30),
             self._pdb_file_input,
             pn.Spacer(height=10),
             pn.Row(
@@ -147,25 +147,36 @@ def load_pdb_file(
     widget_id: str, filename: str, byte_file: bytes, model: int, chain: str
 ) -> Chain:
     try:
-        structure = load.read_pdb_from_bytes(filename, byte_file)
+        structure = load.read_pdb_from_bytes(Path(filename).stem, byte_file)
         return select.get_chain(structure, model, chain)
-    except AttributeError:
+    except (TypeError, AttributeError):
         raise NoFileSelected(widget_id)
     except KeyError:
         structure_id = Path(filename).stem
         raise ChainNotFound(structure_id, model, chain)
 
 
-class PDBLoaderBase(Viewer):
+class OptionsWidget(Viewer):
+    def __panel__(self):
+        ...
+
+    @property
+    def value(self):
+        ...
+
+
+class PDBLoader(Viewer):
     def __init__(
         self,
         input_widget: PDBInputWidget,
+        options_widget: OptionsWidget,
         about: str,
         **params,
     ):
         super().__init__(**params)
         self._about = about
         self._input_widget = input_widget
+        self._options_widget = options_widget
 
         self._button = pnw.Button(name='Upload', button_type='primary', width=150)
         self._status = pnw.StaticText()
@@ -190,10 +201,15 @@ class PDBLoaderBase(Viewer):
     def chain_b(self) -> Chain:
         return self._input_widget.chain_b
 
+    @property
+    def options_value(self):
+        return self._options_widget.value
+
     def __panel__(self) -> pn.panel:
         return pn.Card(
             self._about,
             self._input_widget,
+            self._options_widget,
             pn.Row(self._button, align='center'),
             pn.Row(self._status, align='center'),
             collapsible=False,

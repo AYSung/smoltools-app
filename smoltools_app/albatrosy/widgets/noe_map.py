@@ -1,6 +1,7 @@
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
+import param
 
 from smoltools import albatrosy
 
@@ -55,9 +56,9 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
         pn.Tabs(
             ('Intra-chain NOEs', centered_row(intra_chain_noe_map)),
             ('Inter-chain NOEs', centered_row(inter_chain_noe_map)),
-            ('NOE table A', centered_row(make_noe_table(data['a']))),
-            ('NOE table B', centered_row(make_noe_table(data['b']))),
-            ('NOE table A-B', centered_row(make_noe_table(data['delta']))),
+            ('NOE table A', centered_row(NOETable(data['a']).view)),
+            ('NOE table B', centered_row(NOETable(data['b']).view)),
+            ('NOE table A-B', centered_row(NOETable(data['delta']).view)),
             align='center',
         ),
         title='NOE Maps',
@@ -84,3 +85,32 @@ def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
             'distance': '0.0',
         },
     )
+
+
+class NOETable(param.Parameterized):
+    def __init__(self, data: pd.DataFrame, **params) -> None:
+        super().__init__(**params)
+        self._data = data
+        self._search_bar = pnw.TextInput(
+            placeholder='Search for atom id...',
+        )
+
+    @property
+    def search_term(self) -> str:
+        value = self._search_bar.value.upper()
+        return value if len(value) >= 3 else None
+
+    @pn.depends('_search_bar.value')
+    def view(self):
+        if self.search_term is None:
+            df = self._data
+        else:
+            df = self._data.loc[
+                lambda x: x.id_a.str.contains(self.search_term)
+                | x.id_2.str.contains(self.search_term)
+            ]
+
+        return pn.Column(
+            self._search_bar,
+            make_noe_table(df),
+        )

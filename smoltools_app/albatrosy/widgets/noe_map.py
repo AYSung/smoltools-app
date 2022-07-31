@@ -83,5 +83,4 @@ def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
         formatters={
             'distance': '0.0',
         },
-        sortable=False,
     )

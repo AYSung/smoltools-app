@@ -68,10 +68,10 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
             ('NOE table B', centered_row(NOETable(chain_b_table_data).view)),
             ('NOE table A-B', centered_row(NOETable(delta_table_data).view)),
             align='center',
-            width=900,
+            width=800,
         ),
         justify_content='center',
-        min_width=1000,
+        min_width=900,
     )
 
 

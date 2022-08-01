@@ -1,6 +1,7 @@
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
+import param
 
 from smoltools import albatrosy
 
@@ -83,5 +84,4 @@ def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
         formatters={
             'distance': '0.0',
         },
-        sortable=False,
     )

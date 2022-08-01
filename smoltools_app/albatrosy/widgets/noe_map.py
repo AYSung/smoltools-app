@@ -48,6 +48,9 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
     intra_chain_noe_map = pn.pane.Vega(
         albatrosy.plots.spliced_noe_map(combined_distances)
     )
+    chain_a_noe_map = pn.pane.Vega(albatrosy.plots.noe_map(data['a']))
+    chain_b_noe_map = pn.pane.Vega(albatrosy.plots.noe_map(data['b']))
+
     inter_chain_noe_map = pn.pane.Vega(
         albatrosy.plots.interchain_noe_map(
             data['delta'],
@@ -63,6 +66,8 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
     return pn.FlexBox(
         pn.Tabs(
             ('Intra-chain NOEs', centered_row(intra_chain_noe_map)),
+            ('Chain A NOEs', centered_row(chain_a_noe_map)),
+            ('Chain B NOEs', centered_row(chain_b_noe_map)),
             ('Inter-chain NOEs', centered_row(inter_chain_noe_map)),
             ('NOE table A', centered_row(NOETable(chain_a_table_data).view)),
             ('NOE table B', centered_row(NOETable(chain_b_table_data).view)),

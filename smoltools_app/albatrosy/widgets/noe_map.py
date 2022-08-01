@@ -21,11 +21,16 @@ def make_monomer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
     noe_map_b = pn.pane.Vega(albatrosy.plots.noe_map(data['b']))
     combined_noe_map = pn.pane.Vega(albatrosy.plots.spliced_noe_map(combined_distances))
 
+    chain_a_table_data = filter_table_data(data['a'], symmetric=True)
+    chain_b_table_data = filter_table_data(data['b'], symmetric=True)
+
     return pn.Card(
         pn.Tabs(
             ('Combined', centered_row(combined_noe_map)),
             ('Conformation A', centered_row(noe_map_a)),
             ('Conformation B', centered_row(noe_map_b)),
+            ('NOE table A', centered_row(NOETable(chain_a_table_data).view)),
+            ('NOE table B', centered_row(NOETable(chain_b_table_data).view)),
             align='center',
         ),
         title='NOE Maps',
@@ -52,33 +57,9 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
         )
     )
 
-    chain_a_table_data = (
-        data['a']
-        .pipe(albatrosy.add_noe_bins)
-        .loc[
-            lambda x: albatrosy.lower_triangle(x) & (x.noe_strength != 'none'),
-            ['id_1', 'id_2', 'distance', 'noe_strength'],
-        ]
-        .sort_values('noe_strength')
-    )
-    chain_b_table_data = (
-        data['b']
-        .pipe(albatrosy.add_noe_bins)
-        .loc[
-            lambda x: albatrosy.lower_triangle(x) & (x.noe_strength != 'none'),
-            ['id_1', 'id_2', 'distance', 'noe_strength'],
-        ]
-        .sort_values('noe_strength')
-    )
-    delta_table_data = (
-        data['delta']
-        .pipe(albatrosy.add_noe_bins)
-        .loc[
-            lambda x: (x.noe_strength != 'none'),
-            ['id_1', 'id_2', 'distance', 'noe_strength'],
-        ]
-        .sort_values('noe_strength')
-    )
+    chain_a_table_data = filter_table_data(data['a'], symmetric=True)
+    chain_b_table_data = filter_table_data(data['b'], symmetric=True)
+    delta_table_data = filter_table_data(data['delta'], symmetric=False)
 
     return pn.FlexBox(
         pn.Tabs(
@@ -94,6 +75,21 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
         justify_content='center',
         min_width=1000,
     )
+
+
+def filter_table_data(df: pd.DataFrame, symmetric: bool) -> pd.DataFrame:
+    data = (
+        df.pipe(albatrosy.add_noe_bins)
+        .loc[
+            lambda x: x.noe_strength != 'none',
+            ['id_1', 'id_2', 'distance', 'noe_strength'],
+        ]
+        .sort_values('noe_strength')
+    )
+    if symmetric:
+        return data.loc[lambda x: albatrosy.lower_triangle(x)]
+    else:
+        return data
 
 
 def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:

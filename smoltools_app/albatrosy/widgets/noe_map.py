@@ -52,29 +52,53 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
         )
     )
 
-    return pn.Card(
+    chain_a_table_data = (
+        data['a']
+        .pipe(albatrosy.add_noe_bins)
+        .loc[
+            lambda x: albatrosy.lower_triangle(x) & (x.noe_strength != 'none'),
+            ['id_1', 'id_2', 'distance', 'noe_strength'],
+        ]
+        .sort_values('noe_strength')
+    )
+    chain_b_table_data = (
+        data['b']
+        .pipe(albatrosy.add_noe_bins)
+        .loc[
+            lambda x: albatrosy.lower_triangle(x) & (x.noe_strength != 'none'),
+            ['id_1', 'id_2', 'distance', 'noe_strength'],
+        ]
+        .sort_values('noe_strength')
+    )
+    delta_table_data = (
+        data['delta']
+        .pipe(albatrosy.add_noe_bins)
+        .loc[
+            lambda x: (x.noe_strength != 'none'),
+            ['id_1', 'id_2', 'distance', 'noe_strength'],
+        ]
+        .sort_values('noe_strength')
+    )
+
+    return pn.FlexBox(
         pn.Tabs(
             ('Intra-chain NOEs', centered_row(intra_chain_noe_map)),
             ('Inter-chain NOEs', centered_row(inter_chain_noe_map)),
-            ('NOE table A', centered_row(NOETable(data['a']).view)),
-            ('NOE table B', centered_row(NOETable(data['b']).view)),
-            ('NOE table A-B', centered_row(NOETable(data['delta']).view)),
+            ('NOE table A', centered_row(NOETable(chain_a_table_data).view)),
+            ('NOE table B', centered_row(NOETable(chain_b_table_data).view)),
+            ('NOE table A-B', centered_row(NOETable(delta_table_data).view)),
             align='center',
+            min_width=800,
         ),
-        title='NOE Maps',
-        collapsible=False,
-        width=900,
+        align='center',
+        justify_content='center',
+        min_width=1000,
     )
 
 
 def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
     return table.data_table(
-        data=df.pipe(albatrosy.add_noe_bins)
-        .loc[
-            lambda x: albatrosy.lower_triangle(x) & (x.noe_strength != 'none'),
-            ['id_1', 'id_2', 'distance', 'noe_strength'],
-        ]
-        .sort_values('noe_strength'),
+        data=df,
         titles={
             'id_1': 'Atom #1',
             'id_2': 'Atom #2',
@@ -106,7 +130,7 @@ class NOETable(param.Parameterized):
             df = self._data
         else:
             df = self._data.loc[
-                lambda x: x.id_a.str.contains(self.search_term)
+                lambda x: x.id_1.str.contains(self.search_term)
                 | x.id_2.str.contains(self.search_term)
             ]
 

@@ -1,6 +1,7 @@
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
+import param
 
 from smoltools import albatrosy
 
@@ -20,12 +21,16 @@ def make_monomer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
     noe_map_b = pn.pane.Vega(albatrosy.plots.noe_map(data['b']))
     combined_noe_map = pn.pane.Vega(albatrosy.plots.spliced_noe_map(combined_distances))
 
+    chain_a_table_data = filter_table_data(data['a'], symmetric=True)
+    chain_b_table_data = filter_table_data(data['b'], symmetric=True)
+
     return pn.Card(
         pn.Tabs(
             ('Combined', centered_row(combined_noe_map)),
             ('Conformation A', centered_row(noe_map_a)),
             ('Conformation B', centered_row(noe_map_b)),
-            align='center',
+            ('NOE table A', centered_row(NOETable(chain_a_table_data).view)),
+            ('NOE table B', centered_row(NOETable(chain_b_table_data).view)),
         ),
         title='NOE Maps',
         collapsible=False,
@@ -43,6 +48,9 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
     intra_chain_noe_map = pn.pane.Vega(
         albatrosy.plots.spliced_noe_map(combined_distances)
     )
+    chain_a_noe_map = pn.pane.Vega(albatrosy.plots.noe_map(data['a']))
+    chain_b_noe_map = pn.pane.Vega(albatrosy.plots.noe_map(data['b']))
+
     inter_chain_noe_map = pn.pane.Vega(
         albatrosy.plots.interchain_noe_map(
             data['delta'],
@@ -51,29 +59,45 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
         )
     )
 
-    return pn.Card(
+    chain_a_table_data = filter_table_data(data['a'], symmetric=True)
+    chain_b_table_data = filter_table_data(data['b'], symmetric=True)
+    delta_table_data = filter_table_data(data['delta'], symmetric=False)
+
+    return pn.FlexBox(
         pn.Tabs(
             ('Intra-chain NOEs', centered_row(intra_chain_noe_map)),
+            ('Chain A NOEs', centered_row(chain_a_noe_map)),
+            ('Chain B NOEs', centered_row(chain_b_noe_map)),
             ('Inter-chain NOEs', centered_row(inter_chain_noe_map)),
-            ('NOE table A', centered_row(make_noe_table(data['a']))),
-            ('NOE table B', centered_row(make_noe_table(data['b']))),
-            ('NOE table A-B', centered_row(make_noe_table(data['delta']))),
+            ('NOE table A', centered_row(NOETable(chain_a_table_data).view)),
+            ('NOE table B', centered_row(NOETable(chain_b_table_data).view)),
+            ('NOE table A-B', centered_row(NOETable(delta_table_data).view)),
             align='center',
+            width=800,
         ),
-        title='NOE Maps',
-        collapsible=False,
-        width=900,
+        justify_content='center',
+        min_width=900,
     )
+
+
+def filter_table_data(df: pd.DataFrame, symmetric: bool) -> pd.DataFrame:
+    data = (
+        df.pipe(albatrosy.add_noe_bins)
+        .loc[
+            lambda x: x.noe_strength != 'none',
+            ['id_1', 'id_2', 'distance', 'noe_strength'],
+        ]
+        .sort_values('noe_strength')
+    )
+    if symmetric:
+        return data.loc[lambda x: albatrosy.lower_triangle(x)]
+    else:
+        return data
 
 
 def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
     return table.data_table(
-        data=df.pipe(albatrosy.add_noe_bins)
-        .loc[
-            lambda x: albatrosy.lower_triangle(x) & (x.noe_strength != 'none'),
-            ['id_1', 'id_2', 'distance', 'noe_strength'],
-        ]
-        .sort_values('noe_strength'),
+        data=df,
         titles={
             'id_1': 'Atom #1',
             'id_2': 'Atom #2',
@@ -83,5 +107,33 @@ def make_noe_table(df: pd.DataFrame) -> pnw.DataFrame:
         formatters={
             'distance': '0.0',
         },
-        sortable=False,
     )
+
+
+class NOETable(param.Parameterized):
+    def __init__(self, data: pd.DataFrame, **params) -> None:
+        super().__init__(**params)
+        self._data = data
+        self._search_bar = pnw.TextInput(
+            placeholder='Search for atom id...',
+        )
+
+    @property
+    def search_term(self) -> str:
+        value = self._search_bar.value.upper()
+        return value if len(value) >= 3 else None
+
+    @pn.depends('_search_bar.value')
+    def view(self):
+        if self.search_term is None:
+            df = self._data
+        else:
+            df = self._data.loc[
+                lambda x: x.id_1.str.contains(self.search_term)
+                | x.id_2.str.contains(self.search_term)
+            ]
+
+        return pn.Column(
+            self._search_bar,
+            make_noe_table(df),
+        )

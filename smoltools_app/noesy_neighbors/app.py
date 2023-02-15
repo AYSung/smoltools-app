@@ -13,7 +13,7 @@ class Dashboard(pn.template.BootstrapTemplate):
     def __init__(self, **params):
         super().__init__(
             site='SmolTools',
-            title='AlbaTROSY',
+            title='NOESY Neighbors',
             header_background=colors.LIGHT_BLUE,
             **params,
             # TODO: logo and favicon

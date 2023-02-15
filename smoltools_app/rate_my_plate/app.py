@@ -1,9 +1,15 @@
+from io import BytesIO
+from pathlib import Path
+
+import altair as alt
 import panel as pn
+import panel.widgets as pnw
 
 from utils import colors, config
 from rate_my_plate.widgets.excel_loader import ExcelLoader, NoFileSelected
-from smoltools.rate_my_plate import read_data_from_bytes, rate_plate
-from smoltools.rate_my_plate import kinetics_curves
+from smoltools.rate_my_plate import read_data_from_bytes, rate_plate, convert_to_wide
+from smoltools.rate_my_plate import consumption_curve, kinetics_curves
+from rate_my_plate.widgets.excel_download import excel_file_download
 
 
 class Dashboard(pn.template.BootstrapTemplate):
@@ -22,10 +28,6 @@ class Dashboard(pn.template.BootstrapTemplate):
             pn.FlexBox(
                 pn.Row(
                     self.excel_loader,
-                    # pn.Spacer(width=20),
-                    # pn.Column('**OR**', align='center'),
-                    # pn.Spacer(width=20),
-                    # self.pdb_loader_2,
                     align='center',
                 ),
                 justify_content='center',
@@ -40,39 +42,71 @@ class Dashboard(pn.template.BootstrapTemplate):
             self.excel_loader.show_error(NoFileSelected())
         else:
             self.excel_loader.upload_success()
-            self.analyze_data()
+            self.preview_data()
+            # self.analyze_data()
 
-    def analyze_data(self) -> None:
-        self.analyzed_data = rate_plate(self.data)
-        self.main[0].objects = [pn.Card(kinetics_curves(self.analyzed_data))]
+    def plot_consumption_curves(self) -> alt.Chart():
+        # TODO: check that lower percent < upper percent
+        return consumption_curve(
+            self.data,
+            lower_percent=self._lower_percent.value,
+            upper_percent=self._upper_percent.value,
+        )
 
-    # def _upload_files(self, pdb_loader: PDBLoader, analysis_function: Callable):
-    #     try:
-    #         chain_a = pdb_loader.chain_a
-    #         chain_b = pdb_loader.chain_b
-    #         mode = pdb_loader.options_value
+    def preview_data(self) -> None:
+        self._lower_percent = pnw.FloatInput(
+            name='lower percent cutoff', value=0.15, step=0.05
+        )
+        self._upper_percent = pnw.FloatInput(
+            name='upper percent cutoff', value=0.85, step=0.05
+        )
+        self._redo_filter_button = pnw.Button(name='Set new thresholds')
+        self._continue_button = pnw.Button(name='Continue', button_type='success')
+        self._continue_button.on_click(self.analyze_data)
 
-    #         analyses = analysis_function(chain_a, chain_b, mode)
-    #     except (NoFileSelected, ChainNotFound, NoResiduesFound, NoAtomsFound) as e:
-    #         pdb_loader.show_error(e)
-    #     else:
-    #         pdb_loader.upload_success()
-    #         self.show_analyses(analyses)
+        plots = self.plot_consumption_curves()
+        self.main[0].objects = [
+            pn.FlexBox(
+                pn.Column(
+                    pn.pane.Vega(plots),
+                    pn.Row(
+                        self._lower_percent,
+                        self._upper_percent,
+                        align='center',
+                    ),
+                    self._redo_filter_button,
+                    pn.layout.Divider(),
+                    self._continue_button,
+                    align='center',
+                    max_width=2250,
+                ),
+                justify_content='center',
+                min_width=0,
+            )
+        ]
 
-    # def upload_conformation_files(self, event=None) -> Callable:
-    #     self._upload_files(
-    #         pdb_loader=self.pdb_loader_1,
-    #         analysis_function=run_conformation_analysis,
-    #     )
+    def analyze_data(self, event=None) -> None:
+        self.analyzed_data = rate_plate(
+            self.data,
+            lower_percent=self._lower_percent.value,
+            upper_percent=self._upper_percent.value,
+        )
+        filename = Path(self.excel_loader.input_filename).stem
+        self.main[0].objects = [
+            pn.Card(kinetics_curves(self.analyzed_data)),
+            pn.Card(
+                excel_file_download(
+                    self._download_callback,
+                    f'{filename}-rated.xlsx',
+                )
+            ),
+        ]
 
-    # def upload_interchain_files(self, event=None) -> Callable:
-    #     self._upload_files(
-    #         pdb_loader=self.pdb_loader_2,
-    #         analysis_function=run_interchain_analysis,
-    #     )
-
-    # def show_analyses(self, analyses: list[pn.Card]) -> None:
-    #     self.main[0].objects = analyses
+    def _download_callback(self) -> BytesIO:
+        bytes_io = BytesIO()
+        self.analyzed_data.pipe(convert_to_wide).to_excel(bytes_io, index=False)
+        bytes_io.seek(0)
+        return bytes_io
 
 
 def app() -> pn.pane:

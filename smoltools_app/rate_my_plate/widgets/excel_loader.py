@@ -43,6 +43,10 @@ class ExcelLoader(Viewer):
     def input_value(self):
         return self._input_widget.value
 
+    @property
+    def input_filename(self):
+        return self._input_widget.filename
+
     def __panel__(self) -> pn.panel:
         return pn.Card(
             self._input_widget,

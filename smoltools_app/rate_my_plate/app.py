@@ -24,6 +24,18 @@ class Dashboard(pn.template.BootstrapTemplate):
         self.excel_loader = ExcelLoader()
         self.excel_loader.bind_button(self.load_excel_file)
 
+        self._lower_percent = pnw.FloatInput(
+            name='lower percent cutoff', value=0.15, step=0.05, start=0, end=0.5
+        )
+        self._upper_percent = pnw.FloatInput(
+            name='upper percent cutoff', value=0.85, step=0.05, start=0.5, end=1
+        )
+        self._redo_filter_button = pnw.Button(name='Set new thresholds')
+        self._redo_filter_button.on_click(self.preview_data)
+
+        self._continue_button = pnw.Button(name='Continue', button_type='success')
+        self._continue_button.on_click(self.analyze_data)
+
         self.main.append(
             pn.FlexBox(
                 pn.Row(
@@ -43,27 +55,15 @@ class Dashboard(pn.template.BootstrapTemplate):
         else:
             self.excel_loader.upload_success()
             self.preview_data()
-            # self.analyze_data()
 
     def plot_consumption_curves(self) -> alt.Chart():
-        # TODO: check that lower percent < upper percent
         return consumption_curve(
             self.data,
             lower_percent=self._lower_percent.value,
             upper_percent=self._upper_percent.value,
         )
 
-    def preview_data(self) -> None:
-        self._lower_percent = pnw.FloatInput(
-            name='lower percent cutoff', value=0.15, step=0.05
-        )
-        self._upper_percent = pnw.FloatInput(
-            name='upper percent cutoff', value=0.85, step=0.05
-        )
-        self._redo_filter_button = pnw.Button(name='Set new thresholds')
-        self._continue_button = pnw.Button(name='Continue', button_type='success')
-        self._continue_button.on_click(self.analyze_data)
-
+    def preview_data(self, event=None) -> None:
         plots = self.plot_consumption_curves()
         self.main[0].objects = [
             pn.FlexBox(
@@ -77,11 +77,8 @@ class Dashboard(pn.template.BootstrapTemplate):
                     self._redo_filter_button,
                     pn.layout.Divider(),
                     self._continue_button,
-                    align='center',
-                    max_width=2250,
                 ),
                 justify_content='center',
-                min_width=0,
             )
         ]
 
@@ -93,12 +90,15 @@ class Dashboard(pn.template.BootstrapTemplate):
         )
         filename = Path(self.excel_loader.input_filename).stem
         self.main[0].objects = [
-            pn.Card(kinetics_curves(self.analyzed_data)),
-            pn.Card(
-                excel_file_download(
-                    self._download_callback,
-                    f'{filename}-rated.xlsx',
-                )
+            pn.FlexBox(
+                pn.Column(
+                    pn.pane.Vega(kinetics_curves(self.analyzed_data)),
+                    excel_file_download(
+                        self._download_callback,
+                        f'{filename}-rated.xlsx',
+                    ),
+                ),
+                justify_content='center',
             ),
         ]
 

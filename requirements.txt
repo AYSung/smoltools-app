@@ -5,3 +5,4 @@ scipy>=1.8.0
 biopython>=1.79
 smoltools>=1.0.8
 openpyxl>=3.1.1
+xlrd>=2.0.1

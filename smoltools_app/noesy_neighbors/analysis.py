@@ -1,9 +1,9 @@
 from Bio.PDB.Chain import Chain
 import pandas as pd
 import panel as pn
-from smoltools import albatrosy
+from smoltools import noesy_neighbors
 
-from albatrosy.widgets import distance, noe_map, scatter
+from noesy_neighbors.widgets import distance, noe_map, scatter
 
 
 def run_interchain_analysis(
@@ -23,12 +23,12 @@ def _get_chain_id(chain: Chain) -> str:
 def load_interchain_data(
     chain_a: Chain, chain_b: Chain, labeled_atoms: dict[str, list[str]]
 ) -> dict[str, pd.DataFrame]:
-    coords_a = albatrosy.coordinates_from_chain(chain_a, labeled_atoms)
-    coords_b = albatrosy.coordinates_from_chain(chain_b, labeled_atoms)
+    coords_a = noesy_neighbors.coordinates_from_chain(chain_a, labeled_atoms)
+    coords_b = noesy_neighbors.coordinates_from_chain(chain_b, labeled_atoms)
 
-    distances_a = albatrosy.pairwise_distances(coords_a)
-    distances_b = albatrosy.pairwise_distances(coords_b)
-    delta_distances = albatrosy.pairwise_distances(coords_a, coords_b)
+    distances_a = noesy_neighbors.pairwise_distances(coords_a)
+    distances_b = noesy_neighbors.pairwise_distances(coords_b)
+    delta_distances = noesy_neighbors.pairwise_distances(coords_a, coords_b)
 
     return {
         'a': distances_a,
@@ -55,14 +55,14 @@ def run_conformation_analysis(
 def load_conformation_data(
     chain_a: Chain, chain_b: Chain, mode: str
 ) -> dict[str, pd.DataFrame]:
-    distances_a = albatrosy.coordinates_from_chain(chain_a, mode).pipe(
-        albatrosy.pairwise_distances
+    distances_a = noesy_neighbors.coordinates_from_chain(chain_a, mode).pipe(
+        noesy_neighbors.pairwise_distances
     )
-    distances_b = albatrosy.coordinates_from_chain(chain_b, mode).pipe(
-        albatrosy.pairwise_distances
+    distances_b = noesy_neighbors.coordinates_from_chain(chain_b, mode).pipe(
+        noesy_neighbors.pairwise_distances
     )
 
-    delta_distances = albatrosy.pairwise_distances_between_conformations(
+    delta_distances = noesy_neighbors.pairwise_distances_between_conformations(
         distances_a, distances_b
     )
 

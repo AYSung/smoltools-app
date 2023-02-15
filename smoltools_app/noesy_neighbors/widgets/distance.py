@@ -1,7 +1,7 @@
 import pandas as pd
 import panel as pn
 import panel.widgets as pnw
-from smoltools import albatrosy
+from smoltools import noesy_neighbors
 
 from common.widgets import table
 from common.widgets.containers import centered_row
@@ -9,7 +9,9 @@ from common.widgets.containers import centered_row
 
 def make_distance_table(df: pd.DataFrame) -> pnw.DataFrame:
     return table.data_table(
-        data=df.loc[lambda x: albatrosy.lower_triangle(x) & (x.delta_distance > 0)],
+        data=df.loc[
+            lambda x: noesy_neighbors.lower_triangle(x) & (x.delta_distance > 0)
+        ],
         titles={
             'id_1': 'Atom #1',
             'id_2': 'Atom #2',
@@ -28,9 +30,11 @@ def make_distance_table(df: pd.DataFrame) -> pnw.DataFrame:
 def make_distance_widget(data: dict[str, pd.DataFrame]):
     distance_table = make_distance_table(data['delta'])
 
-    distance_map_a = pn.pane.Vega(albatrosy.plots.distance_map(data['a']))
-    distance_map_b = pn.pane.Vega(albatrosy.plots.distance_map(data['b']))
-    delta_distance_map = pn.pane.Vega(albatrosy.plots.delta_distance_map(data['delta']))
+    distance_map_a = pn.pane.Vega(noesy_neighbors.plots.distance_map(data['a']))
+    distance_map_b = pn.pane.Vega(noesy_neighbors.plots.distance_map(data['b']))
+    delta_distance_map = pn.pane.Vega(
+        noesy_neighbors.plots.delta_distance_map(data['delta'])
+    )
 
     return pn.Card(
         pn.Tabs(

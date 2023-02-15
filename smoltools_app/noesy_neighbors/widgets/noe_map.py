@@ -3,23 +3,25 @@ import panel as pn
 import panel.widgets as pnw
 import param
 
-from smoltools import albatrosy
+from smoltools import noesy_neighbors
 
 from common.widgets import table
 from common.widgets.containers import centered_row
 
 
 def make_monomer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
-    combined_distances = albatrosy.splice_conformation_tables(
+    combined_distances = noesy_neighbors.splice_conformation_tables(
         data['a'],
         data['b'],
         chain_a_id=data['chain_a_id'],
         chain_b_id=data['chain_b_id'],
     )
 
-    noe_map_a = pn.pane.Vega(albatrosy.plots.noe_map(data['a']))
-    noe_map_b = pn.pane.Vega(albatrosy.plots.noe_map(data['b']))
-    combined_noe_map = pn.pane.Vega(albatrosy.plots.spliced_noe_map(combined_distances))
+    noe_map_a = pn.pane.Vega(noesy_neighbors.plots.noe_map(data['a']))
+    noe_map_b = pn.pane.Vega(noesy_neighbors.plots.noe_map(data['b']))
+    combined_noe_map = pn.pane.Vega(
+        noesy_neighbors.plots.spliced_noe_map(combined_distances)
+    )
 
     chain_a_table_data = filter_table_data(data['a'], symmetric=True)
     chain_b_table_data = filter_table_data(data['b'], symmetric=True)
@@ -39,20 +41,20 @@ def make_monomer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
 
 
 def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
-    combined_distances = albatrosy.splice_conformation_tables(
+    combined_distances = noesy_neighbors.splice_conformation_tables(
         data['a'],
         data['b'],
         chain_a_id=data['chain_a_id'],
         chain_b_id=data['chain_b_id'],
     )
     intra_chain_noe_map = pn.pane.Vega(
-        albatrosy.plots.spliced_noe_map(combined_distances)
+        noesy_neighbors.plots.spliced_noe_map(combined_distances)
     )
-    chain_a_noe_map = pn.pane.Vega(albatrosy.plots.noe_map(data['a']))
-    chain_b_noe_map = pn.pane.Vega(albatrosy.plots.noe_map(data['b']))
+    chain_a_noe_map = pn.pane.Vega(noesy_neighbors.plots.noe_map(data['a']))
+    chain_b_noe_map = pn.pane.Vega(noesy_neighbors.plots.noe_map(data['b']))
 
     inter_chain_noe_map = pn.pane.Vega(
-        albatrosy.plots.interchain_noe_map(
+        noesy_neighbors.plots.interchain_noe_map(
             data['delta'],
             x_title=data['chain_a_id'],
             y_title=data['chain_b_id'],
@@ -82,7 +84,7 @@ def make_dimer_noe_widget(data: dict[str, pd.DataFrame]) -> pn.Card:
 
 def filter_table_data(df: pd.DataFrame, symmetric: bool) -> pd.DataFrame:
     data = (
-        df.pipe(albatrosy.add_noe_bins)
+        df.pipe(noesy_neighbors.add_noe_bins)
         .loc[
             lambda x: x.noe_strength != 'none',
             ['id_1', 'id_2', 'distance', 'noe_strength'],
@@ -90,7 +92,7 @@ def filter_table_data(df: pd.DataFrame, symmetric: bool) -> pd.DataFrame:
         .sort_values('noe_strength')
     )
     if symmetric:
-        return data.loc[lambda x: albatrosy.lower_triangle(x)]
+        return data.loc[lambda x: noesy_neighbors.lower_triangle(x)]
     else:
         return data
 

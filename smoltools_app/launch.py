@@ -2,7 +2,7 @@ import os
 
 import panel as pn
 
-from albatrosy.app import app as albatrosy_app
+from noesy_neighbors.app import app as noesy_neighbors_app
 from fret0.app import app as fret0_app
 from utils import paths
 
@@ -12,7 +12,7 @@ def main() -> None:
 
     APPS = {
         'Fret0': fret0_app,
-        'AlbaTROSY': albatrosy_app,
+        'NOESY Neighbors': noesy_neighbors_app,
     }
 
     ON_HEROKU = os.environ.get('ON_HEROKU')

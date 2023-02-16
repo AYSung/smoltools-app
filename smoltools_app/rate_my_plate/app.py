@@ -25,10 +25,10 @@ class Dashboard(pn.template.BootstrapTemplate):
         self.excel_loader.bind_button(self.load_excel_file)
 
         self._lower_percent = pnw.FloatInput(
-            name='lower percent cutoff', value=0.15, step=0.05, start=0, end=0.5
+            name='lower percent cutoff', value=-0.05, step=0.05, start=-0.2, end=0.5
         )
         self._upper_percent = pnw.FloatInput(
-            name='upper percent cutoff', value=0.85, step=0.05, start=0.5, end=1
+            name='upper percent cutoff', value=0.75, step=0.05, start=0.5, end=1
         )
         self._redo_filter_button = pnw.Button(name='Set new thresholds')
         self._redo_filter_button.on_click(self.preview_data)

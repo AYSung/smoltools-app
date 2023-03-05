@@ -33,7 +33,7 @@ class Dashboard(pn.template.BootstrapTemplate):
             name='lower percent cutoff', value=-0.05, step=0.05, start=-0.2, end=0.5
         )
         self._upper_percent = pnw.FloatInput(
-            name='upper percent cutoff', value=0.8, step=0.05, start=0.5, end=1
+            name='upper percent cutoff', value=0.85, step=0.05, start=0.5, end=1
         )
         self._protein_concentration = pnw.FloatInput(
             name='protein concentration (uM)', value=1.0

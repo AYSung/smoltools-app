@@ -32,6 +32,7 @@ class ExcelLoader(Viewer):
 
         self._button = pnw.Button(name='Upload', button_type='primary', width=150)
         self._status = pnw.StaticText()
+        self._example = pn.pane.PNG('assets/screenshots/atpase_example.png')
 
     def bind_button(self, function: Callable[..., None]) -> None:
         self._button.on_click(function)
@@ -58,6 +59,8 @@ class ExcelLoader(Viewer):
             self._input_widget,
             pn.Row(self._button, align='center'),
             pn.Row(self._status, align='center'),
+            'Example data format:',
+            pn.Row(self._example, align='center'),
             collapsible=False,
             title='Upload Plate Reader Data',
         )

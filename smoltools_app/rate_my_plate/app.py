@@ -6,7 +6,11 @@ import panel as pn
 import panel.widgets as pnw
 
 from utils import colors, config
-from rate_my_plate.widgets.excel_loader import ExcelLoader, NoFileSelected
+from rate_my_plate.widgets.excel_loader import (
+    ExcelLoader,
+    NoFileSelected,
+    BadFileFormat,
+)
 from smoltools.rate_my_plate import read_data_from_bytes, rate_plate, convert_to_wide
 from smoltools.rate_my_plate import consumption_curve, kinetics_curves
 from rate_my_plate.widgets.excel_download import excel_file_download
@@ -52,6 +56,8 @@ class Dashboard(pn.template.BootstrapTemplate):
             self.data = read_data_from_bytes(byte_file)
         except (ValueError, TypeError, AttributeError):
             self.excel_loader.show_error(NoFileSelected())
+        except KeyError:
+            self.excel_loader.show_error(BadFileFormat())
         else:
             self.excel_loader.upload_success()
             self.preview_data()

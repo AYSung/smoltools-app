@@ -12,6 +12,12 @@ class NoFileSelected(Exception):
         super().__init__(message)
 
 
+class BadFileFormat(Exception):
+    def __init__(self):
+        message = 'Please double check the table starts in the A1 cell as shown in the example.'
+        super().__init__(message)
+
+
 def excel_file_input() -> pnw.FileInput:
     return pnw.FileInput(accept='.xls,.xlsx')
 

@@ -32,7 +32,7 @@ class Dashboard(pn.template.BootstrapTemplate):
             name='lower percent cutoff', value=-0.05, step=0.05, start=-0.2, end=0.5
         )
         self._upper_percent = pnw.FloatInput(
-            name='upper percent cutoff', value=0.75, step=0.05, start=0.5, end=1
+            name='upper percent cutoff', value=0.8, step=0.05, start=0.5, end=1
         )
         self._redo_filter_button = pnw.Button(name='Set new thresholds')
         self._redo_filter_button.on_click(self.preview_data)

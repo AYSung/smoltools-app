@@ -30,10 +30,10 @@ class Dashboard(pn.template.BootstrapTemplate):
         self.excel_loader.bind_button(self.load_excel_file)
 
         self._lower_percent = pnw.FloatInput(
-            name='lower percent cutoff', value=-0.05, step=0.05, start=-0.2, end=0.5
+            name='lower percent cutoff', value=-0.05, step=0.05, start=-0.05, end=0.5
         )
         self._upper_percent = pnw.FloatInput(
-            name='upper percent cutoff', value=0.85, step=0.05, start=0.5, end=1
+            name='upper percent cutoff', value=0.85, step=0.05, start=0.5, end=1.05
         )
         self._protein_concentration = pnw.FloatInput(
             name='protein concentration (uM)', value=1.0

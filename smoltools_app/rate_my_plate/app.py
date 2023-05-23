@@ -89,6 +89,10 @@ class Dashboard(pn.template.BootstrapTemplate):
                     self._redo_filter_button,
                     pn.Row(
                         self._protein_concentration,
+                        pnw.StaticText(
+                            value='(press enter to update concentration)',
+                            align='end',
+                        ),
                     ),
                     pn.layout.Divider(),
                     self._continue_button,
